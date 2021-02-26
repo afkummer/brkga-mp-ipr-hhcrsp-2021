@@ -448,6 +448,7 @@ int main(int argc, char* argv[]) {
       } while (generation < num_generations);
 
       printProgress(); 
+      cout << "Evolutionary process finished.\n";
 
       {
          stringstream ss;
@@ -464,7 +465,7 @@ int main(int argc, char* argv[]) {
          for (const auto &t: sol.insertOrder)
             cout << t << endl;
 
-         cout << "\nUnused vehicles: ";
+         cout << "\nUnused vehicle list: ";
          int idle = 0;
          for (int v = 0; v < instance.numVehicles(); ++v) {
             if (sol.routes[v].size() <= 2) {
