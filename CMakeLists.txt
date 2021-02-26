@@ -16,15 +16,14 @@ add_definitions(
 
 # Set some include directories to the compiler look for header files of project dependencies.
 include_directories(brkga_mp_ipr_cpp/brkga_mp_ipr)
-include_directories(gecco2020-brkga/src)
 
 # Add the source code directory to the compiler include path.
 include_directories(src)
 
 # Definitions for Debug and Release compilation.
 # To set the build mode, specify the value of var `CMAKE_BUILD_TYPE` when running CMake.
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
 
 # Fallback to Debug build type automatically if no compilation mode was specified.
 if(NOT CMAKE_BUILD_TYPE)
@@ -44,12 +43,8 @@ add_executable(
    src/mainBrkgaMpIpr.cpp
    src/Solution.cpp
    src/SortingDecoder.cpp
-
-   # Dependency source code.
-   # This submodule also contains the benchmark instances we use to test the 
-   # new genetic algorithm.
-   gecco2020-brkga/src/Instance.cpp      
-   gecco2020-brkga/src/Task.cpp
+   src/Instance.cpp      
+   src/Task.cpp
 )
 
 # Link the main binary against its dependency libraries.

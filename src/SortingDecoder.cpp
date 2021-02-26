@@ -123,6 +123,7 @@ Solution SortingDecoder::decodeSolution(const std::vector<double> &chromosome) c
 }
 
 double SortingDecoder::decode(const std::vector<double> &chromosome, bool rewrite) const {
+   (void) rewrite;
    return decodeSolution(chromosome).cachedCost;
 }
 
