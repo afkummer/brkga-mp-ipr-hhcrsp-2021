@@ -11,7 +11,9 @@ add_definitions(
    -march=native -mtune=native
    -Wall -Wextra -Wshadow 
    -fopenmp
+   -pthread
    -fno-omit-frame-pointer
+   -flto
 )
 
 # Set some include directories to the compiler look for header files of project dependencies.
@@ -57,4 +59,9 @@ target_link_libraries(
    # Also link with the Boost Program Options library, which we use to parse 
    # the command line parameters.
    boost_program_options
+
+   # Enable link-time optimization and pthread support.
+   -flto
+   -pthread
 )
+
