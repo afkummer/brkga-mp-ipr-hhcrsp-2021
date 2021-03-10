@@ -24,7 +24,7 @@ include_directories(src)
 
 # Definitions for Debug and Release compilation.
 # To set the build mode, specify the value of var `CMAKE_BUILD_TYPE` when running CMake.
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
 
 # Fallback to Debug build type automatically if no compilation mode was specified.
