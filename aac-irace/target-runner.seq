@@ -1,0 +1,62 @@
+#!/bin/bash
+
+error() {
+   echo "`TZ=UTC date`: $0: error: $@" >&2
+   exit 1
+}
+
+# Path to the solver from inside the arena directory.
+EXE=../../build/brkga
+
+# Set the number of decoding thread to be used by the BRKGA.
+# This should be adjusted if the user changes the number of parallel
+# runs in scenario.txt
+export OMP_NUM_THREADS=2
+
+# Gives more meaningful names to the script arguments
+CONFIG_ID="$1"
+INSTANCE_ID="$2"
+SEED="$3"
+INSTANCE="$4"
+
+# Once again, I _stoled_ some code from the irace examples.
+shift 4 || error "Not enough parameters"
+CONFIG_PARAMS=$*
+
+# Sets the file redirection for the stdout and stderr.
+# Useful for debugging cases.
+STDOUT=c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stdout
+STDERR=c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stderr
+
+if [ ! -x "${EXE}" ]; then
+    error "${EXE}: not found or not executable (pwd: $(pwd))"
+fi
+
+# Runs the solver.
+echo "Machine: $(hostname)" 1>> $STDOUT 2>> $STDERR
+echo "Cmdline: $EXE -s $SEED -i $INSTANCE  ${CONFIG_PARAMS} " 1>> $STDOUT 2>> $STDERR
+$EXE -s $SEED -i $INSTANCE  ${CONFIG_PARAMS} 1>> $STDOUT 2>> $STDERR
+
+# Check if there is any data in the stdout.
+# The inexistence of this file may indicate an error in the execution
+# of the solver.
+if [ ! -s "${STDOUT}" ]; then
+   error "${STDOUT}: No such file or directory"
+fi
+
+# If the stdout file exists, its last line should contains
+# the cost of the best solution found during the experiment.
+# Then, try to extract a number from it, or issue an error.
+COST=$(tail -n1 ${STDOUT})
+if ! [[ "$COST" =~ ^[-+0-9.eE]+$ ]] ; then
+    error "${STDOUT}: Output is not a number"
+fi
+
+# Print the cost. The irace takes it value from the stdout of the target runner.
+echo "$COST"
+
+# Optional step.
+# Remove temporary files and signals a success exit to the irace.
+rm -f "${STDOUT}" "${STDERR}"
+rm -f best.* stat.* cmp.*
+exit 0
