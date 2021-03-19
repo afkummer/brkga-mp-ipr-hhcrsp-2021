@@ -57,7 +57,7 @@ All the progress of the search is logged out in the standard output. When the me
 
 ## Automatic parameter setting through irace
 
-The `brkga` command is highly parameterized, requiring a large human effort to manually set a good choice of values. Instead, we use the [irace](https://github.com/MLopez-Ibanez/irace) tool to automatically choose a effective parameter setting to the problem automatically. All the files you need to run your own automatic algorithm configuration experiment is inside the [aac-irace](aac-irace/) directory. We already run such experiment, and our output is available in the [aac-aac-irace/run-march14](aac-aac-irace/run-march14/) directory.
+The `brkga` command is highly parameterized, requiring a large human effort to manually set a good choice of values. Instead, we use the [irace](https://github.com/MLopez-Ibanez/irace) tool to automatically choose an effective parameter setting to the problem automatically. All the files you need to run your own automatic algorithm configuration experiment is inside the [aac-irace](aac-irace/) directory. We already run such experiment, and our output is available in the [aac-aac-irace/run-march14](aac-aac-irace/run-march14/) directory.
 
 ## Output logs of our experiment
 
