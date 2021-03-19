@@ -38,7 +38,7 @@ $ cd build
 $ cmake .. -DCMAKE_BUILD_TYPE=Release
 ```
 
-Once completed, you can run the standard `$ make` utility to build the binary. After this step, you have generated the `brkga` binary. 
+Once completed, you can run the standard `make` utility to build the binary. After this step, you have generated the `brkga` binary. 
 
 **Note:** The CMakeLists.txt contains instructions to generate a binary optimized for the native processor of the compilation machine. If you plan to run the code in other system, you need to either recompile the code into such machine, or change the [CMakeLists.txt](CMakeLists.txt) parameters to `-march=x86-64` and `-mtune=generic`. As a consequence, you may expect a small performance hit due to the target-agnostic binary.
 
@@ -47,7 +47,10 @@ Once completed, you can run the standard `$ make` utility to build the binary. A
 To run the meta-heuristic, you only need to invoke the `brkga` command. By default, the program shows a quick summary of accepted parameters if you give none. For example, you can solve the instance `InstanzVNS_200_2.txt` using the following command line.
 
 ```
-$ ./brkga --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 3 --bp constant --npop 3 --npairs 75 --mindist 0.001 --psel random --pperc 0.01 --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50 -i ../gecco2020-brkga/instances-HHCRSP/InstanzVNS_HCSRP_200_2.txt -s 13
+$ ./brkga --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 3 --bp constant \
+          --npop 3 --npairs 75 --mindist 0.001 --psel random --pperc 0.01 \
+          --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50 \
+          -i ../gecco2020-brkga/instances-HHCRSP/InstanzVNS_HCSRP_200_2.txt -s 13
 ```
 
 All the progress of the search is logged out in the standard output. When the meta-heuristic finishes, the solution is then written to the text file indicated in the output.
