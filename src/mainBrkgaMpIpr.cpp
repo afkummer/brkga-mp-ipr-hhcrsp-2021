@@ -202,7 +202,7 @@ void printSupplyDemandIndicators(const Instance &inst) {
 int main(int argc, char* argv[]) {
 
    auto args = parseCommandline(argc, argv);
-   auto brParams = extractFrom(args);
+   auto brkga_params = extractFrom(args);
 
    cout << "--- BRKGA-MP-IPR for HHCRSP ---\n";
    cout << "Instance: " << args["instance"].as<string>() << endl;
@@ -212,10 +212,7 @@ int main(int argc, char* argv[]) {
 
    double overallBest = 1e75;
    try {
-      ////////////////////////////////////////
-      // Read command-line arguments and the instance
-      ////////////////////////////////////////
-
+      
       const unsigned seed = args["seed"].as<int>();
       const string config_file = "config.conf";
       const unsigned num_generations = args["gens"].as<int>();
@@ -230,21 +227,7 @@ int main(int argc, char* argv[]) {
       printSupplyDemandIndicators(instance);
       cout << endl;
 
-      ////////////////////////////////////////
-      // Read algorithm parameters
-      ////////////////////////////////////////
-
       cout << "Reading parameters..." << endl;
-
-      // C++14 syntax.
-      //auto params = BRKGA::readConfiguration(config_file);
-      //auto& brkga_params = params.first;
-      auto brkga_params = brParams;
-
-      // C++17 syntax.
-      // auto [brkga_params, control_params] =
-      //     BRKGA::readConfiguration(config_file);
-
       DistanceFunc dfunc =
          brkga_params.pr_type == BRKGA::PathRelinking::Type::DIRECT
             ? DistanceFunc::HAMMING
@@ -273,24 +256,13 @@ int main(int argc, char* argv[]) {
          }
       }
 
-      ////////////////////////////////////////
-      // Build the BRKGA data structures and initialize
-      ////////////////////////////////////////
-
       cout << "Building BRKGA data and initializing..." << endl;
-
       SortingDecoder decoder(instance);
-
       BRKGA::BRKGA_MP_IPR<SortingDecoder> algorithm(
             decoder, BRKGA::Sense::MINIMIZE, seed,
             decoder.chromosomeLength(), brkga_params, omp_get_max_threads());
 
-      // NOTE: don't forget to initialize the algorithm.
       algorithm.initialize();
-
-      ////////////////////////////////////////
-      // Find good solutions / evolve
-      ////////////////////////////////////////
 
       cout << "Evolving " << num_generations << " generations..." << endl;
       const auto prPeriod = args["pperiod"].as<int>();
@@ -346,7 +318,7 @@ int main(int argc, char* argv[]) {
             setw(33) << "Best solution        " << " " << 
             
             setw(7) << "Time" << " " <<
-            setw(2) << "Op" << 
+            setw(3) << "Op" << 
          endl;
 
          cout << 
@@ -361,7 +333,7 @@ int main(int argc, char* argv[]) {
 
       // Prints the algorithm progress.
       char hdr = ' ';
-      char evt = ' ';
+      string evt = "";
       auto printProgress = [&] () {
          if (linesPrinted >= 15) {
             printHeader();
@@ -388,10 +360,10 @@ int main(int argc, char* argv[]) {
             setw(7) << setprecision(1) << tmax << " " <<
 
             setw(7) << setprecision(1) << tm.elapsed() << " " <<
-            setw(2) << evt << 
+            setw(3) << evt << 
          endl;
          hdr = ' ';
-         evt = ' ';
+         evt = "";
       };
       
       printHeader();
@@ -420,7 +392,7 @@ int main(int argc, char* argv[]) {
 
          if (prPeriod > 0 && generation > 0 && generation % prPeriod == 0) {
             using BRKGA::PathRelinking::PathRelinkingResult;
-            evt = 'P';
+            evt += 'P';
             prOp++;
             PathRelinkingResult result;
             if (dfunc == DistanceFunc::HAMMING) {
@@ -447,7 +419,7 @@ int main(int argc, char* argv[]) {
          }
 
          if (exchangePeriod > 0 && generation > 0 && brkga_params.num_independent_populations > 1 && generation % exchangePeriod == 0) {
-            evt = 'X';
+            evt += 'X';
             xeOp++;
             algorithm.exchangeElite(immigrants);
          }
@@ -461,14 +433,14 @@ int main(int argc, char* argv[]) {
          }
 
          if (noImprove >= resetPeriod) {
-            evt = 'R';
+            evt += 'R';
             rstOp++;
             localBest = numeric_limits<double>::infinity();
             algorithm.reset();
             noImprove = 0;
          }
 
-         if (evt != ' ') {
+         if (!evt.empty()) {
             printProgress();
          }
 
