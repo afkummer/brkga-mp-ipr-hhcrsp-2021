@@ -1,0 +1,56 @@
+# The MIT License (MIT)
+#
+# Copyright (c) 2021
+# Alberto Francisco Kummer Neto (afkneto@inf.ufrgs.br),
+# Luciana Salete Buriol (buriol@inf.ufrgs.br),
+# Olinto César Bassi de Araújo (olinto@ctism.ufsm.br) and
+# Mauricio G.C. Resende (resendem@amazon.com)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#
+# Standard scenario file for calibrating the BRKGA solver for HHCRSP.
+#
+
+# Fixed seed to enforce reproducibility of the results.
+seed = 2021
+targetRunner = "./target-runner.seq"
+
+# Specifies the file with the parameters accepted by the brkga utility
+# and their valid range of values.
+parameterFile = "./parameters.categories.txt"
+
+# Configures the working directory of the calibration experiment.
+execDir = "./arena"
+
+# Sets the path to the training dataset.
+trainInstancesDir = "../gecco2020-brkga/instances-HHCRSP/"
+trainInstancesFile = "./train.txt"
+
+# Sets the file with the forbidden configuration rules.
+forbiddenFile = "./forbidden.categories.txt"
+
+# Maximum number of experiments to run.
+maxExperiments = 1000
+
+# Precision of float point numbers.
+digits = 5
+
+# Number of parallel executions of the target runner.
+# Our machine is not very powerfull, so we keep this value very low.
+parallel = 2

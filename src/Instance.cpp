@@ -1,10 +1,11 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020
+ * Copyright (c) 2021
  * Alberto Francisco Kummer Neto (afkneto@inf.ufrgs.br),
- * Luciana Salete Buriol (buriol@inf.ufrgs.br) and
- * Olinto César Bassi de Araújo (olinto@ctism.ufsm.br)
+ * Luciana Salete Buriol (buriol@inf.ufrgs.br),
+ * Olinto César Bassi de Araújo (olinto@ctism.ufsm.br) and
+ * Mauricio G.C. Resende (resendem@amazon.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in

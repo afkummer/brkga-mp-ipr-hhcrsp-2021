@@ -1,0 +1,441 @@
+#------------------------------------------------------------------------------
+# irace: An implementation in R of (Elitist) Iterated Racing
+# Version: 3.4.1.9fcaeaf
+# Copyright (C) 2010-2020
+# Manuel Lopez-Ibanez     <manuel.lopez-ibanez@manchester.ac.uk>
+# Jeremie Dubois-Lacoste  
+# Leslie Perez Caceres    <leslie.perez.caceres@ulb.ac.be>
+#
+# This is free software, and you are welcome to redistribute it under certain
+# conditions.  See the GNU General Public License for details. There is NO
+# WARRANTY; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# irace builds upon previous code from the race package:
+#     race: Racing methods for the selection of the best
+#     Copyright (C) 2003 Mauro Birattari
+#------------------------------------------------------------------------------
+# installed at: /home/alberto/R/x86_64-pc-linux-gnu-library/3.4/irace
+# called with: 
+Warning: A default scenario file './scenario.txt' has been found and will be read
+# 10 expression(s) specifying forbidden configurations read from '/home/alberto/work/brkga_mp_ipr_cpp_hhcrsp/examples/hhcrsp/irace/forbidden.categories.txt'
+# 2021-03-10 14:07:02 -03: Initialization
+# Elitist race
+# Elitist new instances: 1
+# Elitist limit: 2
+# nbIterations: 6
+# minNbSurvival: 6
+# nbParameters: 16
+# seed: 2021
+# confidence level: 0.95
+# budget: 1000
+# mu: 5
+# deterministic: FALSE
+
+# 2021-03-10 14:07:02 -03: Iteration 1 of 6
+# experimentsUsedSoFar: 0
+# remainingBudget: 1000
+# currentBudget: 166
+# nbConfigurations: 27
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|          1|         27|         10|    1302.500000|         27|00:39:09|   NA|  NA|    NA|
+|x|          2|         27|         24|    1216.900000|         54|00:37:10|+0.92|0.96|0.0093|
+|x|          3|         27|         24|    1254.500000|         81|00:34:45|+0.90|0.94|0.0085|
+|x|          4|         27|         24|    1251.650000|        108|00:36:34|+0.93|0.94|0.0101|
+|-|          5|          4|         10|    1223.500000|        135|00:42:07|+0.12|0.30|0.6706|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          10    mean value:     1223.500000
+Description of the best-so-far configuration:
+   .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+10   10            1000            1900              0.1              0.01             7             2     constant               2           75      0.001 random           0.1 permutation          180             700                       80                        50       NA
+
+# 2021-03-10 17:16:51 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+10            1000            1900              0.1              0.01             7             2     constant               2           75      0.001 random           0.1 permutation          180             700                       80                        50
+24            1500            1700             0.35               0.1             7             1    quadratic               4          100        0.7 random          0.35 permutation          400             650                      150                         1
+21             750            1800             0.25              0.01             6             2   loginverse               4          125        0.1 random           0.6 permutation          180            1100                      400                       120
+19            1200             950              0.4               0.1             8             1    quadratic               4          220        0.4 random           0.3 permutation           10             900                      400                        30
+# 2021-03-10 17:16:51 -03: Iteration 2 of 6
+# experimentsUsedSoFar: 135
+# remainingBudget: 865
+# currentBudget: 173
+# nbConfigurations: 27
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|          6|         27|         43|    1272.900000|         27|00:48:07|   NA|  NA|    NA|
+|x|          4|         27|         24|    1260.700000|         50|00:32:08|+0.82|0.91|0.0186|
+|x|          3|         27|         24|    1283.700000|         73|00:36:12|+0.82|0.88|0.0156|
+|x|          5|         27|         10|    1243.175000|         96|00:38:21|+0.85|0.89|0.0120|
+|-|          2|          7|         24|    1218.640000|        119|00:40:27|+0.00|0.20|0.8679|
+|=|          1|          7|         24|    1234.550000|        122|00:07:30|+0.03|0.19|0.8421|
+|=|          7|          7|         24|    1221.457143|        129|00:27:00|-0.04|0.11|0.8865|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          24    mean value:     1221.457143
+Description of the best-so-far configuration:
+   .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+24   24            1500            1700             0.35               0.1             7             1    quadratic               4          100        0.7 random          0.35 permutation          400             650                      150                         1       NA
+
+# 2021-03-10 21:06:40 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+24            1500            1700             0.35               0.1             7             1    quadratic               4          100        0.7 random          0.35 permutation          400             650                      150                         1
+10            1000            1900              0.1              0.01             7             2     constant               2           75      0.001 random           0.1 permutation          180             700                       80                        50
+29            1000            1000              0.1              0.01             6             2     constant               3           75        0.9   best           0.1 permutation          180             400                      400                       150
+19            1200             950              0.4               0.1             8             1    quadratic               4          220        0.4 random           0.3 permutation           10             900                      400                        30
+31             800            1400              0.2              0.01             8             2   loginverse               3          150      0.001 random          0.01 permutation          210             450                      350                        15
+21             750            1800             0.25              0.01             6             2   loginverse               4          125        0.1 random           0.6 permutation          180            1100                      400                       120
+# 2021-03-10 21:06:40 -03: Iteration 3 of 6
+# experimentsUsedSoFar: 264
+# remainingBudget: 736
+# currentBudget: 184
+# nbConfigurations: 28
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|          8|         28|         70|    1355.900000|         28|00:39:34|   NA|  NA|    NA|
+|x|          7|         28|         21|    1249.250000|         50|00:40:44|+0.62|0.81|0.0271|
+|x|          3|         28|         21|    1274.733333|         72|00:29:58|+0.68|0.78|0.0217|
+|x|          5|         28|         63|    1235.475000|         94|00:35:32|+0.70|0.78|0.0169|
+|-|          1|         10|         63|    1246.460000|        116|00:34:05|-0.09|0.13|0.9123|
+|=|          4|         10|         70|    1243.483333|        120|00:11:42|-0.01|0.16|0.8426|
+|=|          6|         10|         70|    1250.742857|        124|00:13:08|+0.02|0.16|0.8293|
+|=|          2|         10|         67|    1236.425000|        128|00:11:50|+0.00|0.13|0.8850|
+|=|          9|         10|         70|    1245.744444|        138|00:22:48|+0.01|0.12|0.8989|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          70    mean value:     1245.744444
+Description of the best-so-far configuration:
+   .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+70   70            1500            1700              0.3               0.1             7             1    quadratic               3          100        0.6   best          0.35 permutation           80             650                      150                        10       24
+
+# 2021-03-11 01:06:05 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+70            1500            1700              0.3               0.1             7             1    quadratic               3          100        0.6   best          0.35 permutation           80             650                      150                        10
+24            1500            1700             0.35               0.1             7             1    quadratic               4          100        0.7 random          0.35 permutation          400             650                      150                         1
+67             700            1800              0.4              0.01             4             1   loginverse               4          220        0.7 random           1.0 permutation          210             450                      400                         1
+10            1000            1900              0.1              0.01             7             2     constant               2           75      0.001 random           0.1 permutation          180             700                       80                        50
+63            1000            1100             0.15              0.05             3             1   loginverse               3           75        0.8 random           0.4 permutation          180             400                       80                        15
+19            1200             950              0.4               0.1             8             1    quadratic               4          220        0.4 random           0.3 permutation           10             900                      400                        30
+# 2021-03-11 01:06:05 -03: Iteration 4 of 6
+# experimentsUsedSoFar: 402
+# remainingBudget: 598
+# currentBudget: 199
+# nbConfigurations: 25
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|         10|         25|         70|    1385.300000|         25|00:47:17|   NA|  NA|    NA|
+|x|          2|         25|         74|    1251.300000|         44|00:31:48|+0.86|0.93|0.0286|
+|x|          6|         25|         74|    1262.466667|         63|00:35:34|+0.87|0.92|0.0214|
+|x|          5|         25|         74|    1225.800000|         82|00:38:40|+0.85|0.89|0.0181|
+|-|          4|          9|         74|    1229.500000|        101|00:32:49|-0.14|0.09|1.0325|
+|=|          3|          9|         78|    1246.100000|        104|00:12:19|-0.08|0.10|0.9534|
+|=|          8|          9|         74|    1267.271429|        107|00:21:16|-0.03|0.12|0.9247|
+|=|          1|          9|         87|    1264.162500|        110|00:13:46|+0.02|0.14|0.8590|
+|=|          9|          9|         87|    1270.444444|        113|00:23:32|-0.01|0.10|0.9115|
+|=|          7|          9|         87|    1256.010000|        116|00:14:58|-0.01|0.09|0.9163|
+|=|         11|          9|         74|    1271.581818|        125|00:19:33|+0.00|0.09|0.8891|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          74    mean value:     1271.581818
+Description of the best-so-far configuration:
+   .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+74   74            1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50       10
+
+# 2021-03-11 05:57:44 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+74            1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+87            1500             900             0.35              0.01             4             1   loginverse               3          125        0.7 random           1.0 permutation          210             450                      150                         1
+78            1500            1700             0.35              0.15             5             1    quadratic               4          100        0.7 random          0.35 permutation          400             650                      150                         5
+70            1500            1700              0.3               0.1             7             1    quadratic               3          100        0.6   best          0.35 permutation           80             650                      150                        10
+24            1500            1700             0.35               0.1             7             1    quadratic               4          100        0.7 random          0.35 permutation          400             650                      150                         1
+67             700            1800              0.4              0.01             4             1   loginverse               4          220        0.7 random           1.0 permutation          210             450                      400                         1
+# 2021-03-11 05:57:44 -03: Iteration 5 of 6
+# experimentsUsedSoFar: 527
+# remainingBudget: 473
+# currentBudget: 236
+# nbConfigurations: 25
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|         12|         25|         92|    1116.500000|         25|01:02:35|   NA|  NA|    NA|
+|x|          7|         25|         92|    1099.500000|         44|00:44:08|+0.68|0.84|0.0104|
+|x|         11|         25|        101|    1195.600000|         63|00:38:21|+0.65|0.77|0.0166|
+|x|          4|         25|         92|    1199.975000|         82|00:39:25|+0.67|0.75|0.0162|
+|-|          8|         12|         94|    1238.100000|        101|00:39:11|-0.01|0.19|0.8882|
+|=|          2|         12|         94|    1217.750000|        107|00:13:00|+0.04|0.20|0.8797|
+|=|          5|         12|         94|    1199.885714|        113|00:18:03|+0.07|0.20|0.8464|
+|=|          6|         12|         94|    1210.500000|        119|00:17:46|+0.07|0.18|0.8315|
+|=|          9|         12|         94|    1222.888889|        125|00:13:31|+0.07|0.17|0.8395|
+|=|         10|         12|         94|    1239.260000|        131|00:18:14|+0.06|0.15|0.8613|
+|=|          3|         12|         94|    1251.545455|        137|00:17:23|+0.03|0.12|0.8977|
+|=|          1|         12|        101|    1248.250000|        143|00:18:44|+0.03|0.11|0.8954|
+|=|         13|         12|        101|    1252.907692|        155|00:30:10|+0.04|0.12|0.8772|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:         101    mean value:     1252.907692
+Description of the best-so-far configuration:
+    .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+101  101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50       74
+
+# 2021-03-11 12:08:23 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+94             1000            1900              0.1              0.01             8             2     constant               3          220      0.001 random          0.01 permutation          180             700                       80                        50
+74             1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+87             1500             900             0.35              0.01             4             1   loginverse               3          125        0.7 random           1.0 permutation          210             450                      150                         1
+95             1500             900             0.35              0.01             5             1   loginverse               4          125        0.7 random           1.0 permutation          210             800                      150                         1
+78             1500            1700             0.35              0.15             5             1    quadratic               4          100        0.7 random          0.35 permutation          400             650                      150                         5
+# 2021-03-11 12:08:23 -03: Iteration 6 of 6
+# experimentsUsedSoFar: 682
+# remainingBudget: 318
+# currentBudget: 318
+# nbConfigurations: 28
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|         14|         28|        121|    1089.000000|         28|01:01:40|   NA|  NA|    NA|
+|x|          9|         28|        127|    1207.900000|         50|00:43:51|+0.58|0.79|0.0085|
+|x|         13|         28|         78|    1237.166667|         72|00:57:24|+0.72|0.81|0.0052|
+|x|          3|         28|         78|    1258.175000|         94|00:53:02|+0.66|0.74|0.0051|
+|-|          5|         12|        101|    1223.840000|        116|00:49:35|-0.11|0.11|1.0568|
+|=|          7|         12|        101|    1205.200000|        122|00:17:43|-0.09|0.09|1.0086|
+|=|         10|         12|         78|    1237.171429|        128|00:21:31|-0.11|0.05|1.0260|
+|=|          1|         12|         78|    1243.512500|        134|00:21:48|-0.09|0.05|0.9993|
+|=|          2|         12|         78|    1231.022222|        140|00:20:57|-0.09|0.03|1.0092|
+|=|         12|         12|        101|    1217.670000|        146|00:20:10|-0.08|0.03|1.0022|
+|=|          4|         12|        101|    1218.527273|        152|00:19:14|-0.06|0.03|0.9794|
+|=|          6|         12|        101|    1221.933333|        158|00:21:42|-0.05|0.04|0.9645|
+|=|         11|         12|        101|    1231.861538|        164|00:15:10|-0.03|0.05|0.9476|
+|=|          8|         12|        101|    1242.250000|        170|00:19:33|-0.03|0.05|0.9425|
+|=|         15|         12|        101|    1245.886667|        182|00:29:01|-0.02|0.05|0.9263|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:         101    mean value:     1245.886667
+Description of the best-so-far configuration:
+    .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+101  101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50       74
+
+# 2021-03-11 20:00:53 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+113            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+94             1000            1900              0.1              0.01             8             2     constant               3          220      0.001 random          0.01 permutation          180             700                       80                        50
+95             1500             900             0.35              0.01             5             1   loginverse               4          125        0.7 random           1.0 permutation          210             800                      150                         1
+121            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+74             1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+# 2021-03-11 20:00:53 -03: Iteration 7 of 7
+# experimentsUsedSoFar: 864
+# remainingBudget: 136
+# currentBudget: 136
+# nbConfigurations: 14
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|         16|         14|        113|    1293.800000|         14|00:30:17|   NA|  NA|    NA|
+|x|          8|         14|        121|    1332.800000|         22|00:14:54|+0.25|0.63|0.0420|
+|x|          1|         14|        121|    1318.066667|         30|00:16:49|+0.52|0.68|0.0274|
+|x|         14|         14|        121|    1260.800000|         38|00:23:23|+0.61|0.70|0.0236|
+|-|         11|          7|        121|    1282.960000|         46|00:15:30|-0.01|0.19|0.9360|
+|=|         13|          7|        121|    1288.166667|         47|00:07:50|-0.10|0.08|0.9687|
+|=|          7|          7|        121|    1263.000000|         48|00:08:17|-0.02|0.12|0.9022|
+|=|          6|          7|        121|    1262.550000|         49|00:08:23|+0.04|0.16|0.8414|
+|=|          2|          7|        101|    1248.266667|         50|00:07:53|-0.04|0.08|0.8927|
+|=|          9|          7|        101|    1256.340000|         51|00:13:08|-0.05|0.05|0.8994|
+|=|          4|          7|        101|    1253.681818|         52|00:12:25|-0.06|0.04|0.8857|
+|=|          5|          7|        101|    1239.883333|         53|00:08:16|-0.06|0.03|0.8956|
+|=|         15|          7|        101|    1244.261538|         54|00:08:15|-0.04|0.04|0.8778|
+|=|         12|          7|        101|    1235.657143|         55|00:07:53|-0.04|0.04|0.8635|
+|=|          3|          7|        101|    1239.253333|         56|00:07:26|-0.02|0.05|0.8639|
+|=|         10|          7|        101|    1249.625000|         57|00:13:34|-0.02|0.04|0.8581|
+|=|         17|          7|        101|    1249.735294|         64|00:15:36|-0.03|0.03|0.8648|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:         101    mean value:     1249.735294
+Description of the best-so-far configuration:
+    .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+101  101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50       74
+
+# 2021-03-11 23:40:48 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+113            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+95             1500             900             0.35              0.01             5             1   loginverse               4          125        0.7 random           1.0 permutation          210             800                      150                         1
+121            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+94             1000            1900              0.1              0.01             8             2     constant               3          220      0.001 random          0.01 permutation          180             700                       80                        50
+74             1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+# 2021-03-11 23:40:48 -03: Iteration 8 of 8
+# experimentsUsedSoFar: 928
+# remainingBudget: 72
+# currentBudget: 72
+# nbConfigurations: 9
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|         18|          9|         74|    1093.000000|          9|00:18:27|   NA|  NA|    NA|
+|x|         13|          9|         74|    1193.800000|         12|00:06:30|+0.60|0.80|0.0234|
+|x|         14|          9|         95|    1169.633333|         15|00:12:23|+0.61|0.74|0.0610|
+|x|         17|          9|         95|    1180.500000|         18|00:06:11|+0.66|0.75|0.0611|
+|-|          3|          6|        113|    1208.180000|         21|00:09:43|-0.21|0.03|1.0092|
+|.|         15|          6|        113|    1222.950000|         21|00:00:00|-0.10|0.09|0.9194|
+|.|         10|          6|        113|    1248.385714|         21|00:00:00|-0.11|0.05|0.9225|
+|.|          6|          6|        113|    1249.762500|         21|00:00:00|-0.11|0.03|0.9279|
+|.|          8|          6|        113|    1263.933333|         21|00:00:00|-0.11|0.02|0.9114|
+|.|          9|          6|        113|    1270.440000|         21|00:00:00|-0.09|0.02|0.8970|
+|.|          4|          6|        113|    1266.518182|         21|00:00:00|-0.09|0.01|0.8854|
+|.|          1|          6|        113|    1268.358333|         21|00:00:00|-0.08|0.01|0.8971|
+|.|         11|          6|        113|    1276.300000|         21|00:00:00|-0.08|0.01|0.9003|
+|.|          2|          6|        113|    1265.464286|         21|00:00:00|-0.07|0.01|0.8911|
+|.|          7|          6|        113|    1255.233333|         21|00:00:00|-0.07|0.00|0.8875|
+|.|         12|          6|        113|    1248.162500|         21|00:00:00|-0.06|0.01|0.8777|
+|.|         16|          6|        113|    1250.847059|         21|00:00:00|-0.06|0.01|0.8801|
+|.|          5|          6|        113|    1241.805556|         21|00:00:00|-0.05|0.01|0.8768|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:         101    mean value:     1241.733333
+Description of the best-so-far configuration:
+    .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+101  101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50       74
+
+# 2021-03-12 00:34:05 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+113            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+74             1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+121            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+95             1500             900             0.35              0.01             5             1   loginverse               4          125        0.7 random           1.0 permutation          210             800                      150                         1
+94             1000            1900              0.1              0.01             8             2     constant               3          220      0.001 random          0.01 permutation          180             700                       80                        50
+# 2021-03-12 00:34:05 -03: Iteration 9 of 9
+# experimentsUsedSoFar: 949
+# remainingBudget: 51
+# currentBudget: 51
+# nbConfigurations: 8
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|      Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+|x|         19|          8|        101|    1295.800000|          8|00:17:11|   NA|  NA|    NA|
+|x|         12|          8|        101|    1209.800000|         10|00:09:22|-0.61|0.19|1.3046|
+|x|         10|          8|         74|    1293.466667|         12|00:16:52|-0.18|0.22|1.0591|
+|x|          3|          8|        101|    1278.600000|         14|00:14:32|-0.12|0.16|0.9692|
+|=|         14|          8|        121|    1243.500000|         16|00:10:48|+0.01|0.21|0.8332|
+|=|         18|          8|        121|    1220.533333|         18|00:10:10|+0.10|0.25|0.7517|
+|=|         13|          8|        101|    1233.228571|         20|00:09:32|+0.09|0.22|0.7582|
+|-|         16|          7|        121|    1241.400000|         22|00:09:19|-0.11|0.03|0.9528|
+|=|          9|          7|         74|    1266.711111|         23|00:16:21|-0.09|0.04|0.9380|
+|=|         15|          7|        121|    1255.700000|         24|00:09:51|-0.08|0.02|0.9430|
+|=|          7|          7|        121|    1242.636364|         25|00:17:34|-0.07|0.03|0.9273|
+|=|         11|          7|        101|    1252.258333|         26|00:08:36|-0.04|0.04|0.9166|
+|=|          5|          7|        101|    1239.630769|         27|00:10:49|-0.03|0.05|0.9109|
+|=|          4|          7|        101|    1238.735714|         28|00:09:08|-0.04|0.03|0.9043|
+|=|          2|          7|        101|    1231.126667|         29|00:16:29|-0.05|0.02|0.9061|
+|=|          8|          7|        101|    1240.262500|         30|00:08:58|-0.06|0.01|0.9058|
+|=|         17|          7|        101|    1240.923529|         31|00:15:17|-0.05|0.01|0.8966|
+|=|          6|          7|        101|    1241.950000|         32|00:09:31|-0.05|0.01|0.8983|
+|=|          1|          7|        101|    1244.578947|         33|00:09:40|-0.04|0.01|0.8950|
+|=|         20|          7|        113|    1252.735000|         40|00:17:35|-0.05|0.01|0.8984|
++-+-----------+-----------+-----------+---------------+-----------+--------+-----+----+------+
+Best-so-far configuration:         113    mean value:     1252.735000
+Description of the best-so-far configuration:
+    .ID. population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants .PARENT.
+113  113            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50      101
+
+# 2021-03-12 04:41:49 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+113            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+121            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+74             1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+144            1000            1900              0.1              0.01             8             3     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+94             1000            1900              0.1              0.01             8             2     constant               3          220      0.001 random          0.01 permutation          180             700                       80                        50
+# 2021-03-12 04:41:49 -03: Stopped because there is not enough budget left to race more than the minimum (6)
+# You may either increase the budget or set 'minNbSurvival' to a lower value
+# Iteration: 10
+# nbIterations: 10
+# experimentsUsedSoFar: 989
+# timeUsed: 0
+# remainingBudget: 11
+# currentBudget: 11
+# number of elites: 6
+# nbConfigurations: 6
+# Best configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+    population.size num.generations elite.percentage mutant.percentage parents.total parents.elite parents.bias num.populations pr.pairs.num pr.mindist pr.sel pr.percentage     pr.type pr.frequency reset.frequency exchange.elite.frequency exchange.elite.immigrants
+113            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+101            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+121            1000            1900              0.1              0.01             8             3     constant               3           75      0.001 random          0.01 permutation          180             700                       80                        50
+74             1000            1900              0.1              0.01             8             2     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+144            1000            1900              0.1              0.01             8             3     constant               3          220        0.8 random          0.01 permutation          180             700                       80                        50
+94             1000            1900              0.1              0.01             8             2     constant               3          220      0.001 random          0.01 permutation          180             700                       80                        50
+# Best configurations as commandlines (first number is the configuration ID; same order as above):
+113  --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 3 --bp constant --npop 3 --npairs 75 --mindist 0.001 --psel random --pperc 0.01 --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50
+101  --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 3 --bp constant --npop 3 --npairs 75 --mindist 0.001 --psel random --pperc 0.01 --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50
+121  --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 3 --bp constant --npop 3 --npairs 75 --mindist 0.001 --psel random --pperc 0.01 --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50
+74   --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 2 --bp constant --npop 3 --npairs 220 --mindist 0.8 --psel random --pperc 0.01 --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50
+144  --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 3 --bp constant --npop 3 --npairs 220 --mindist 0.8 --psel random --pperc 0.01 --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50
+94   --popsize 1000 --gens 1900 --pe 0.1 --pm 0.01 --mp 8 --ep 2 --bp constant --npop 3 --npairs 220 --mindist 0.001 --psel random --pperc 0.01 --ptype permutation --pperiod 180 --reset 700 --xelite 80 --immigrants 50
