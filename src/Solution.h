@@ -68,5 +68,9 @@ struct Solution {
    void writeTxt(const char *fname) const;
    void writeTxt2(const char *fname, const std::string &headers = "") const;
 
+   void writeGanttDatafile(const char fname[]) const;
+
+   int unusedVehicles() const;
+
 };
 
