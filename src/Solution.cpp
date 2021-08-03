@@ -104,8 +104,6 @@ double Solution::findInsertionCost(Task &task) const {
          double tardinessV0 = max(0.0, startTimeV0 - inst.nodeTwMax(task.node));
          double tardinessV1 = max(0.0, startTimeV1 - inst.nodeTwMax(task.node));
 
-         task.startTime[0] = startTimeV0;
-         task.startTime[1] = startTimeV1;
          task.leaveTime[0] = startTimeV0 + inst.nodeProcTime(task.node, task.skills[0]);
          task.leaveTime[1] = startTimeV1 + inst.nodeProcTime(task.node, task.skills[1]);
 
