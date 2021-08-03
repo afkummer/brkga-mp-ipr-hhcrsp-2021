@@ -71,7 +71,6 @@ double Solution::findInsertionCost(Task &task) const {
 
    // Compute the arrival time of the first vehicle.
    double arrivalV0 = max(inst.nodeTwMin(task.node), vehiLeaveTime[task.vehi[0]] + inst.distance(vehiPos[task.vehi[0]], task.node));
-   task.arrivalTime[0] = arrivalV0;
 
    if (inst.nodeSvcType(task.node) == Instance::SvcType::SINGLE) {
 
@@ -80,7 +79,6 @@ double Solution::findInsertionCost(Task &task) const {
 
       double tardinessV0 = max(0.0, arrivalV0 - inst.nodeTwMax(task.node));
 
-      task.startTime[0] = task.arrivalTime[0];
       task.leaveTime[0] = arrivalV0 + inst.nodeProcTime(task.node, task.skills[0]);
 
       task.incDist = inst.distance(vehiPos[task.vehi[0]], task.node);
@@ -92,7 +90,6 @@ double Solution::findInsertionCost(Task &task) const {
 
       // Computes the arrival time of the second vehicle.
       double arrivalV1 = max(inst.nodeTwMin(task.node), vehiLeaveTime[task.vehi[1]] + inst.distance(vehiPos[task.vehi[1]], task.node));
-      task.arrivalTime[1] = arrivalV1;
 
       if (inst.nodeSvcType(task.node) == Instance::SvcType::SIM) {
 
@@ -100,18 +97,21 @@ double Solution::findInsertionCost(Task &task) const {
          assert(task.skills[1] != -1 && "Second skill for simultaneous double service patient unset.");
 
          double startTime = max(arrivalV0, arrivalV1);
-         task.startTime[0] = task.startTime[1] = startTime;
 
-         double svcTime = max(inst.nodeProcTime(task.node, task.skills[0]), inst.nodeProcTime(task.node, task.skills[1]));
+         double startTimeV0 = startTime;
+         double startTimeV1 = startTime;
 
-         task.leaveTime[0] = startTime + svcTime;
-         task.leaveTime[1] = startTime + svcTime;
+         double tardinessV0 = max(0.0, startTimeV0 - inst.nodeTwMax(task.node));
+         double tardinessV1 = max(0.0, startTimeV1 - inst.nodeTwMax(task.node));
+
+         task.startTime[0] = startTimeV0;
+         task.startTime[1] = startTimeV1;
+         task.leaveTime[0] = startTimeV0 + inst.nodeProcTime(task.node, task.skills[0]);
+         task.leaveTime[1] = startTimeV1 + inst.nodeProcTime(task.node, task.skills[1]);
 
          task.incDist = inst.distance(vehiPos[task.vehi[0]], task.node) + inst.distance(vehiPos[task.vehi[1]], task.node);
-
-         double tardinessAll = max(0.0, startTime - inst.nodeTwMax(task.node));
-         task.incTard = 2.0 * tardinessAll;
-         task.currTmax = tardinessAll;
+         task.incTard = tardinessV0 + tardinessV1;
+         task.currTmax = max(tardinessV0, tardinessV1);
 
       } else {
 
@@ -120,9 +120,6 @@ double Solution::findInsertionCost(Task &task) const {
 
          double startTimeV0 = arrivalV0;
          double startTimeV1 = max(arrivalV1, startTimeV0 + inst.nodeDeltaMin(task.node));
-
-         task.startTime[0] = startTimeV0;
-         task.startTime[1] = startTimeV1;
 
          // Fix any violation of maximum separation time.
          double violDeltaMax = max(0.0, (startTimeV1 - startTimeV0) - inst.nodeDeltaMax(task.node));
@@ -247,33 +244,3 @@ void Solution::writeTxt2(const char *fname, const std::string &headers) const {
       }
    }
 }
-
-void Solution::writeGanttDatafile(const char fname[]) const {
-   ofstream fid(fname);
-   if (!fid) abort();
-
-   fid << inst.numVehicles() << "\n";
-   fid << "Solution cost = " << cachedCost << "\n";
-   for (int v = 0; v < inst.numVehicles(); ++v) {
-      for (auto &t: insertOrder) {
-         int id = -1;
-
-         if (t.vehi[0] == v) id = 0;
-         else if (t.vehi[1] == v) id = 1;
-
-         if (id != -1) {
-            fid << t.node << " " << t.skills[id] << " " << inst.nodeTwMax(t.node) << " " << t.arrivalTime[id] << " " <<
-               t.startTime[id] << " " << t.leaveTime[id] << "\n";
-         }
-      }
-      fid << "-1\n";
-   }
-}
-
-int Solution::unusedVehicles() const {
-   int cnt = 0;
-   for (int v = 0; v < inst.numVehicles(); ++v)
-      cnt += routes[v].size() <= 2 ? 1 : 0;
-   return cnt;
-}
-
