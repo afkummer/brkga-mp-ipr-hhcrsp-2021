@@ -98,16 +98,20 @@ double Solution::findInsertionCost(Task &task) const {
 
          double startTime = max(arrivalV0, arrivalV1);
 
-         double svcTime = max(inst.nodeProcTime(task.node, task.skills[0]), inst.nodeProcTime(task.node, task.skills[1]));
+         double startTimeV0 = startTime;
+         double startTimeV1 = startTime;
 
-         task.leaveTime[0] = startTime + svcTime;
-         task.leaveTime[1] = startTime + svcTime;
+         double tardinessV0 = max(0.0, startTimeV0 - inst.nodeTwMax(task.node));
+         double tardinessV1 = max(0.0, startTimeV1 - inst.nodeTwMax(task.node));
+
+         task.startTime[0] = startTimeV0;
+         task.startTime[1] = startTimeV1;
+         task.leaveTime[0] = startTimeV0 + inst.nodeProcTime(task.node, task.skills[0]);
+         task.leaveTime[1] = startTimeV1 + inst.nodeProcTime(task.node, task.skills[1]);
 
          task.incDist = inst.distance(vehiPos[task.vehi[0]], task.node) + inst.distance(vehiPos[task.vehi[1]], task.node);
-
-         double tardinessAll = max(0.0, startTime - inst.nodeTwMax(task.node));
-         task.incTard = 2.0 * tardinessAll;
-         task.currTmax = tardinessAll;
+         task.incTard = tardinessV0 + tardinessV1;
+         task.currTmax = max(tardinessV0, tardinessV1);
 
       } else {
 
