@@ -456,11 +456,16 @@ int main(int argc, char* argv[]) {
       cout << "Evolutionary process finished.\n";
 
       {
-         stringstream ss;
-         ss << "solution-" << getpid() << ".txt";
+         char buf[256] = "solution-XXXXXX.txt";
+         int fid = mkstemps(buf, 4);
+         if (fid == -1) {
+            cout << "Error creating solution file: " << strerror(errno) << endl;
+            return EXIT_FAILURE;
+         }
+         close(fid);
          auto sol = decoder.decodeSolution(algorithm.getBestChromosome());
-         sol.writeTxt2(ss.str().c_str(), "# Seed is " + to_string(seed) + ".\n");
-         cout << "Solution written to '" << ss.str() << "'.\n";
+         sol.writeTxt2(buf, "# Seed is " + to_string(seed) + ".\n");
+         cout << "Solution written to '" << buf << "'.\n";
 
          sort(rbegin(sol.insertOrder), rend(sol.insertOrder), [] (const auto &i, const auto &j) {
             return i.incTard < j.incTard;
