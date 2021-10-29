@@ -31,9 +31,11 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <numeric>
+
+#include <boost/container_hash/hash.hpp>
 
 using namespace std;
-
 
 SortingDecoder::SortingDecoder(const Instance& inst_): inst(inst_) {
    vehiSkills.resize(inst.numSkills());
@@ -46,14 +48,13 @@ SortingDecoder::SortingDecoder(const Instance& inst_): inst(inst_) {
    }
 
    // Pair the task lists with the chromosome keys.
-   initialTasks.resize(chromosomeLength());
-   {
-      vector <Task> tl = createTaskList(inst);
-      for (size_t i = 0; i < tl.size(); ++i) {
-         get<0>(initialTasks[i]) = i/1000.0;
-         get<1>(initialTasks[i]) = tl[i];
-      }
-   }
+   allTasks = createTaskList(inst);
+   lexOrder.resize(allTasks.size());
+   iota(lexOrder.begin(), lexOrder.end(), 0);
+#ifdef DECODER_CACHE_STATS
+   cacheHit = 0;
+   cacheMiss = 0;
+#endif
 }
 
 int SortingDecoder::chromosomeLength() const {
@@ -68,21 +69,24 @@ Solution SortingDecoder::decodeSolution(const std::vector<double> &chromosome) c
    assert(chromosomeLength() == static_cast<int>(chromosome.size()) &&
       "Chromossome not long enough to support the sorting procedure.");
 
-   // Pair the task lists with the chromosome keys.
-   vector <TElem> tasks(initialTasks);
-   {
-      for (size_t i = 0; i < tasks.size(); ++i) {
-         get<0>(tasks[i]) = chromosome[i];
-      }
-   }
+   auto taskIndices = lexOrder;
+   sort(begin(taskIndices), end(taskIndices), [&](int i, int j) {
+      return chromosome[i] < chromosome[j];
+   });   
 
-   // Sorts the task list according the paired keys.
-   sort(begin(tasks), end(tasks), [] (const TElem &i, const TElem &j) {
-      return get<0>(i) < get<0>(j);
-   });
+   const auto hval = hash(taskIndices);
+   auto hcost = fetchCache(hval);
+   if (hcost != numeric_limits<double>::infinity()) {
+      currSol.cachedCost = hcost;
+#ifdef DECODER_CACHE_STATS
+      #pragma omp critical
+      const_cast<int&>(cacheHit) += 1;
+#endif
+      return currSol;
+   }      
 
-   for (size_t i = 0; i < tasks.size(); ++i) {
-      Task &task = get<1>(tasks[i]);
+   for (size_t i = 0; i < taskIndices.size(); ++i) {
+      Task task = allTasks[taskIndices[i]];
 
       Task best = task;
       best.cachedCost = 1e6;
@@ -120,6 +124,15 @@ Solution SortingDecoder::decodeSolution(const std::vector<double> &chromosome) c
    // Return nodes to depot.
    currSol.finishRoutes();
 
+   // Updates the cache.
+   #pragma omp critical
+   const_cast<decltype(lookupCache)&>(lookupCache)[hval] = currSol.cachedCost;
+
+#ifdef DECODER_CACHE_STATS
+   #pragma omp atomic
+   const_cast<int&>(cacheMiss) += 1;
+#endif
+
    return currSol;
 }
 
@@ -128,3 +141,15 @@ double SortingDecoder::decode(const std::vector<double> &chromosome, bool rewrit
    return decodeSolution(chromosome).cachedCost;
 }
 
+size_t SortingDecoder::hash(const std::vector<int> &ch) const noexcept {
+   size_t seed = 0;
+   boost::hash_range(seed, ch.begin(), ch.end());
+   return seed;
+}
+
+double SortingDecoder::fetchCache(size_t hash) const noexcept {
+   auto it = lookupCache.find(hash);
+   if (it == lookupCache.end())
+      return numeric_limits<double>::infinity();
+   return it->second;
+}

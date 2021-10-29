@@ -37,7 +37,7 @@ struct Solution {
    constexpr static double ONE_THIRD = 1.0/3.0;
    constexpr static double COEFS[] = {ONE_THIRD, ONE_THIRD, ONE_THIRD}; // 0:dist, 1:tard, 2:tmax
 
-   const Instance &inst;
+   const Instance *inst;
 
    // [vehicle] -> route
    // get<0> -> node
@@ -56,8 +56,6 @@ struct Solution {
    double cachedCost;
 
    Solution(const Instance &inst_);
-
-   Solution &operator=(const Solution &other);
 
    double findInsertionCost(Task &task) const;
 

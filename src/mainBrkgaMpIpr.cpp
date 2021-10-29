@@ -445,6 +445,11 @@ int main(int argc, char* argv[]) {
          }
 
          ++generation;
+
+         #ifdef DECODER_CACHE_STATS
+            if (generation % 10 == 0)
+               cout << "Cache size: " << decoder.lookupCache.size() << "   Hits: " << decoder.cacheHit << "   Misses: " << decoder.cacheMiss << endl;
+         #endif
       } while (generation < num_generations);
 
       printProgress(); 
@@ -492,9 +497,9 @@ int main(int argc, char* argv[]) {
    }
    catch(exception& e) {
       cerr << "\n***********************************************************"
-         << "\n****  Exception Occured: " << e.what()
-         << "\n***********************************************************"
-         << endl;
+           << "\n****  Exception Occured: " << e.what()
+           << "\n***********************************************************"
+           << endl;
       return 70; // BSD software internal error code
    }
 

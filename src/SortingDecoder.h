@@ -31,10 +31,11 @@
 #include "Instance.h"
 #include "Solution.h"
 
+#include <unordered_map>
+
+// #define DECODER_CACHE_STATS
 
 struct SortingDecoder {
-   using TElem = std::tuple<double, Task>;
-
    const Instance &inst;
 
    // Cache of vehicles by skills.
@@ -42,7 +43,8 @@ struct SortingDecoder {
    std::vector <std::vector <int>> vehiSkills;
 
    // Caches the task vector used into the decoding process.
-   std::vector <TElem> initialTasks;
+   std::vector <Task> allTasks;
+   std::vector <int> lexOrder;
 
    SortingDecoder(const Instance &inst_);
 
@@ -52,4 +54,14 @@ struct SortingDecoder {
 
    double decode(const std::vector <double> &chromosome, bool rewrite) const;
 
+   // Data structure to cache solution values.
+   // Useful because distinct individuals lead to the same solution.
+   std::unordered_map <size_t, double> lookupCache;
+#ifdef DECODER_CACHE_STATS
+   int cacheHit, cacheMiss;
+#endif
+
+   size_t hash(const std::vector<int> &ch) const noexcept;
+   double fetchCache(size_t hash) const noexcept;
+   void clearCache() noexcept;
 };
