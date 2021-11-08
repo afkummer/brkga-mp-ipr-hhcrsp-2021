@@ -31,10 +31,6 @@
 #include "Instance.h"
 #include "Solution.h"
 
-#include <unordered_map>
-
-// #define DECODER_CACHE_STATS
-
 struct SortingDecoder {
    const Instance &inst;
 
@@ -53,15 +49,4 @@ struct SortingDecoder {
    Solution decodeSolution(const std::vector <double> &chromosome) const;
 
    double decode(const std::vector <double> &chromosome, bool rewrite) const;
-
-   // Data structure to cache solution values.
-   // Useful because distinct individuals lead to the same solution.
-   std::unordered_map <size_t, double> lookupCache;
-#ifdef DECODER_CACHE_STATS
-   int cacheHit, cacheMiss;
-#endif
-
-   size_t hash(const std::vector<int> &ch) const noexcept;
-   double fetchCache(size_t hash) const noexcept;
-   void clearCache() noexcept;
 };

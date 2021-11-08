@@ -51,10 +51,6 @@ SortingDecoder::SortingDecoder(const Instance& inst_): inst(inst_) {
    allTasks = createTaskList(inst);
    lexOrder.resize(allTasks.size());
    iota(lexOrder.begin(), lexOrder.end(), 0);
-#ifdef DECODER_CACHE_STATS
-   cacheHit = 0;
-   cacheMiss = 0;
-#endif
 }
 
 int SortingDecoder::chromosomeLength() const {
@@ -73,17 +69,6 @@ Solution SortingDecoder::decodeSolution(const std::vector<double> &chromosome) c
    sort(begin(taskIndices), end(taskIndices), [&](int i, int j) {
       return chromosome[i] < chromosome[j];
    });   
-
-   const auto hval = hash(taskIndices);
-   auto hcost = fetchCache(hval);
-   if (hcost != numeric_limits<double>::infinity()) {
-      currSol.cachedCost = hcost;
-#ifdef DECODER_CACHE_STATS
-      #pragma omp critical
-      const_cast<int&>(cacheHit) += 1;
-#endif
-      return currSol;
-   }      
 
    for (size_t i = 0; i < taskIndices.size(); ++i) {
       Task task = allTasks[taskIndices[i]];
@@ -124,32 +109,10 @@ Solution SortingDecoder::decodeSolution(const std::vector<double> &chromosome) c
    // Return nodes to depot.
    currSol.finishRoutes();
 
-   // Updates the cache.
-   #pragma omp critical
-   const_cast<decltype(lookupCache)&>(lookupCache)[hval] = currSol.cachedCost;
-
-#ifdef DECODER_CACHE_STATS
-   #pragma omp atomic
-   const_cast<int&>(cacheMiss) += 1;
-#endif
-
    return currSol;
 }
 
 double SortingDecoder::decode(const std::vector<double> &chromosome, bool rewrite) const {
    (void) rewrite;
    return decodeSolution(chromosome).cachedCost;
-}
-
-size_t SortingDecoder::hash(const std::vector<int> &ch) const noexcept {
-   size_t seed = 0;
-   boost::hash_range(seed, ch.begin(), ch.end());
-   return seed;
-}
-
-double SortingDecoder::fetchCache(size_t hash) const noexcept {
-   auto it = lookupCache.find(hash);
-   if (it == lookupCache.end())
-      return numeric_limits<double>::infinity();
-   return it->second;
 }

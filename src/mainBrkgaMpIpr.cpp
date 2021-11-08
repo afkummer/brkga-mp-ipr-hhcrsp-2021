@@ -445,11 +445,6 @@ int main(int argc, char* argv[]) {
          }
 
          ++generation;
-
-         #ifdef DECODER_CACHE_STATS
-            if (generation % 10 == 0)
-               cout << "Cache size: " << decoder.lookupCache.size() << "   Hits: " << decoder.cacheHit << "   Misses: " << decoder.cacheMiss << endl;
-         #endif
       } while (generation < num_generations);
 
       printProgress(); 
