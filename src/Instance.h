@@ -78,6 +78,10 @@ public:
 
    friend std::ostream &operator<<(std::ostream &out, const Instance &inst);
 
+   const std::vector <int> nodeSkills(int node) const;
+   const std::vector <int> vehiSkills(int vehi) const;
+   const std::vector <int> qualifiedVehicles(int svc) const;
+
 protected:
    /**
     * Resize data structures to acommodate all instance parameters.
@@ -101,4 +105,8 @@ private:
    std::vector <std::tuple<double, double>> m_nodePos;
 
    std::vector <std::vector <double>> m_distances;
+
+   std::vector<std::vector<int>> m_nodeSkills;
+   std::vector<std::vector<int>> m_vehiSkills;
+   std::vector<std::vector<int>> m_qualifVehi;
 };

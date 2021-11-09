@@ -161,6 +161,28 @@ Instance::Instance(const char* fname) {
          std::abort();
       }
    }
+
+   // Build the caches.
+   m_nodeSkills.resize(numNodes());
+   m_vehiSkills.resize(numVehicles());
+   m_qualifVehi.resize(numSkills());
+
+   for (int i = 0; i < numNodes(); ++i) {
+      for (int s = 0; s < numSkills(); ++s) {
+         if (nodeReqSkill(i, s)) {
+            m_nodeSkills[i].push_back(s);
+         }
+      }
+   }
+
+   for (int v = 0; v < numVehicles(); ++v) {
+      for (int s = 0; s < numSkills(); ++s) {
+         if (vehicleHasSkill(v, s)) {
+            m_vehiSkills[v].push_back(s);
+            m_qualifVehi[s].push_back(v);
+         }
+      }
+   }
 }
 
 Instance::~Instance() {
@@ -365,3 +387,16 @@ std::ostream &operator<<(std::ostream &out, const Instance &inst) {
 
    return out;
 }
+
+const std::vector <int> Instance::nodeSkills(int node) const { 
+   return m_nodeSkills[node];
+}
+
+const std::vector <int> Instance::vehiSkills(int vehi) const {
+   return m_vehiSkills[vehi];
+}
+
+const std::vector <int> Instance::qualifiedVehicles(int svc) const {
+   return m_qualifVehi[svc];
+}
+
