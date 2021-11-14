@@ -91,8 +91,6 @@ Solution SortingDecoder::decodeSolution(const std::vector<double> &chromosome) c
             for (int v1: vehiSkills[task.skills[1]]) {
                if (v0 == v1)
                   continue;
-               if (!inst.vehicleHasSkill(v1, task.skills[1]))
-                  continue;
 
                task.vehi[1] = v1;
 
