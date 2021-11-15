@@ -61,7 +61,7 @@ std::ostream &operator<<(std::ostream &out, const Task &t) {
 
    out << "   Increment on distance indicator: " << t.incDist << "\n";
    out << "   Increment on tard indicator:     " << t.incTard << "\n";
-   out << "   Value of tmax indicator:         " << t.incDist << endl;
+   out << "   Value of tmax indicator:         " << t.currTmax << endl;
 
    return out;
 }
