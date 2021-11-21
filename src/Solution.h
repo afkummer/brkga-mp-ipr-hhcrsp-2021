@@ -67,6 +67,6 @@ struct Solution {
    void updateRoutes(const Task &task);
    void finishRoutes();
 
-   void writeFile(const char fname[]) const;
+   void writeFile(const char fname[], const int seed = -1) const;
 };
 

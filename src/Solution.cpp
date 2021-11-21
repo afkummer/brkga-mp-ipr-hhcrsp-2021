@@ -211,8 +211,11 @@ void Solution::finishRoutes() {
       COEFS[2] * tmax;
 }
 
-void Solution::writeFile(const char fname[]) const {
+void Solution::writeFile(const char fname[], const int seed) const {
    ofstream fid(fname);
+   fid << "# Instance: " << inst->fileName() << "\n";
+   fid << "# Seed: " << seed << "\n";
+   fid << "# Cost: " << cachedCost << ", dist: " << dist << ", tard: " << tard << ", tmax: " << tmax << "\n";
    for (int v = 0; v < inst->numVehicles(); ++v) {
       fid << routes[v].size() << "\n";
       for (auto [i,s]: routes[v])
