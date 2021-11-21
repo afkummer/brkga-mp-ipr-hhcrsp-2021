@@ -47,6 +47,11 @@ struct Solution {
    // Task insertion order.
    std::vector <Task> insertOrder;
 
+   // Toggles if the `findInsertionCost` method should take 
+   // into account arc connecting the nodes to depot at the end of routes.
+   // Similar to the trivial convex hull-based heuristic for the TSP.
+   bool convHull{false};
+
    std::vector <int> vehiPos;
    std::vector <double> vehiLeaveTime;
 
@@ -58,13 +63,10 @@ struct Solution {
    Solution(const Instance &inst_);
 
    double findInsertionCost(Task &task) const;
-
+   
    void updateRoutes(const Task &task);
-
    void finishRoutes();
 
-   void writeTxt(const char *fname) const;
-   void writeTxt2(const char *fname, const std::string &headers = "") const;
-
+   void writeFile(const char fname[]) const;
 };
 

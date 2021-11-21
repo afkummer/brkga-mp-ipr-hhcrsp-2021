@@ -69,8 +69,18 @@ double Solution::findInsertionCost(Task &task) const {
       double tardinessV0 = max(0.0, arrivalV0 - inst->nodeTwMax(task.node));
 
       task.leaveTime[0] = arrivalV0 + inst->nodeProcTime(task.node, task.skills[0]);
+      task.leaveTime[1] = 0.0;
 
-      task.incDist = inst->distance(vehiPos[task.vehi[0]], task.node);
+      if (!convHull) {
+         task.incDist = inst->distance(vehiPos[task.vehi[0]], task.node);
+      } else {
+         task.incDist = 
+            - inst->distance(vehiPos[task.vehi[0]], 0)
+            + inst->distance(vehiPos[task.vehi[0]], task.node)
+            + inst->distance(task.node, 0)
+         ;
+      }
+
       task.incTard = tardinessV0;
       task.currTmax = tardinessV0;
 
@@ -96,7 +106,19 @@ double Solution::findInsertionCost(Task &task) const {
          task.leaveTime[0] = startTimeV0 + inst->nodeProcTime(task.node, task.skills[0]);
          task.leaveTime[1] = startTimeV1 + inst->nodeProcTime(task.node, task.skills[1]);
 
-         task.incDist = inst->distance(vehiPos[task.vehi[0]], task.node) + inst->distance(vehiPos[task.vehi[1]], task.node);
+         if (!convHull) {
+            task.incDist = inst->distance(vehiPos[task.vehi[0]], task.node) + inst->distance(vehiPos[task.vehi[1]], task.node);
+         } else {
+            task.incDist =
+               - inst->distance(vehiPos[task.vehi[0]], 0) 
+               - inst->distance(vehiPos[task.vehi[1]], 0) 
+               + inst->distance(vehiPos[task.vehi[0]], task.node) 
+               + inst->distance(vehiPos[task.vehi[1]], task.node) 
+               + inst->distance(task.node, 0)
+               + inst->distance(task.node, 0)
+            ;
+         }
+
          task.incTard = tardinessV0 + tardinessV1;
          task.currTmax = max(tardinessV0, tardinessV1);
 
@@ -121,10 +143,21 @@ double Solution::findInsertionCost(Task &task) const {
          task.leaveTime[0] = startTimeV0 + inst->nodeProcTime(task.node, task.skills[0]);
          task.leaveTime[1] = startTimeV1 + inst->nodeProcTime(task.node, task.skills[1]);
 
-         task.incDist = inst->distance(vehiPos[task.vehi[0]], task.node) + inst->distance(vehiPos[task.vehi[1]], task.node);
+         if (!convHull) {
+            task.incDist = inst->distance(vehiPos[task.vehi[0]], task.node) + inst->distance(vehiPos[task.vehi[1]], task.node);
+         } else {
+            task.incDist =
+               - inst->distance(vehiPos[task.vehi[0]], 0) 
+               - inst->distance(vehiPos[task.vehi[1]], 0) 
+               + inst->distance(vehiPos[task.vehi[0]], task.node) 
+               + inst->distance(vehiPos[task.vehi[1]], task.node) 
+               + inst->distance(task.node, 0)
+               + inst->distance(task.node, 0)
+            ;
+         }
+
          task.incTard = tardinessV0 + tardinessV1;
          task.currTmax = max(tardinessV0, tardinessV1);
-
       }
    }
 
@@ -166,7 +199,8 @@ void Solution::finishRoutes() {
    // Add the depot node at the end of each vehicle route.
    for (int v = 0; v < inst->numVehicles(); ++v) {
       int lastNode = get<0>(routes[v].back());
-      dist += inst->distance(lastNode, 0);
+      if (!convHull)
+         dist += inst->distance(lastNode, 0);
       routes[v].push_back(make_tuple(0, 0));
    }
 
@@ -177,57 +211,11 @@ void Solution::finishRoutes() {
       COEFS[2] * tmax;
 }
 
-void Solution::writeTxt(const char* fname) const {
+void Solution::writeFile(const char fname[]) const {
    ofstream fid(fname);
-   if (!fid) {
-      cout << "Solution file '" << fname << "' can not be written." << endl;
-      exit(EXIT_FAILURE);
-   }
-
-   fid << "# Solution for " << inst->fileName() << "\n";
-   fid << "# Cost = " << cachedCost << " Dist = " << dist << " Tard = " <<
-      tard << " TMax = " << tmax << "\n";
-   fid << "# <vehicle> <route length>\n";
-   fid << "# <origin node> <dest node> <vehicle> <service type>\n";
-
    for (int v = 0; v < inst->numVehicles(); ++v) {
-      fid << v << " " << routes[v].size()-1 << "\n";
-      for (unsigned pos = 1; pos < routes[v].size(); ++pos) {
-         fid << get<0>(routes[v][pos-1]) << ' ';
-         fid << get<0>(routes[v][pos]) << ' ';
-         fid << v << ' ';
-         fid << get<1>(routes[v][pos]) << '\n';
-      }
-   }
-}
-
-void Solution::writeTxt2(const char *fname, const std::string &headers) const {
-   ofstream fid(fname);
-   if (!fid) {
-      cout << "Solution file '" << fname << "' can not be written." << endl;
-      exit(EXIT_FAILURE);
-   }
-
-   if (!headers.empty())
-      fid << headers;
-
-   fid << "# Solution for " << inst->fileName() << "\n";
-   fid << "# Cost = " << cachedCost << " Dist = " << dist << " Tard = " <<
-      tard << " TMax = " << tmax << "\n";
-   fid << "# <vehicle> <route length>\n";
-   fid << "# <originx> <originy> <destx> <desty> <service type>\n";
-
-   for (int v = 0; v < inst->numVehicles(); ++v) {
-      fid << v << " " << routes[v].size()-1 << "\n";
-
-      for (unsigned pos = 1; pos < routes[v].size(); ++pos) {
-         int originNode = get<0>(routes[v][pos-1]);
-         int destNode = get<0>(routes[v][pos]);
-         int destSvc = get<1>(routes[v][pos]);
-
-         fid << inst->nodePosX(originNode) << ' ' << inst->nodePosY(originNode) << ' ';
-         fid << inst->nodePosX(destNode) << ' ' << inst->nodePosY(destNode) << ' ';
-         fid << destSvc << endl;
-      }
+      fid << routes[v].size() << "\n";
+      for (auto [i,s]: routes[v])
+      fid << i << ' ' << s << "\n";
    }
 }
