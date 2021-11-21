@@ -34,13 +34,11 @@
 struct SortingDecoder {
    const Instance &inst;
 
-   // Cache of vehicles by skills.
-   // [skill id] -> vehicles list
-   std::vector <std::vector <int>> vehiSkills;
-
    // Caches the task vector used into the decoding process.
    std::vector <Task> allTasks;
    std::vector <int> lexOrder;
+
+   bool verbose {false};
 
    SortingDecoder(const Instance &inst_);
 
