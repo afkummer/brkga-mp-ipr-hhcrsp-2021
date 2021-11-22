@@ -459,7 +459,7 @@ int main(int argc, char* argv[]) {
          }
          close(fid);
          auto sol = decoder.decodeSolution(algorithm.getBestChromosome());
-         sol.writeTxt2(buf, "# Seed is " + to_string(seed) + ".\n");
+         sol.writeFile(buf, seed);
          cout << "Solution written to '" << buf << "'.\n";
 
          sort(rbegin(sol.insertOrder), rend(sol.insertOrder), [] (const auto &i, const auto &j) {
