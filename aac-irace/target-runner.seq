@@ -11,7 +11,7 @@ EXE=../../build/brkga
 # Set the number of decoding thread to be used by the BRKGA.
 # This should be adjusted if the user changes the number of parallel
 # runs in scenario.txt
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=4
 
 # Gives more meaningful names to the script arguments
 CONFIG_ID="$1"
@@ -34,8 +34,8 @@ fi
 
 # Runs the solver.
 echo "Machine: $(hostname)" 1>> $STDOUT 2>> $STDERR
-echo "Cmdline: $EXE -s $SEED -i $INSTANCE  ${CONFIG_PARAMS} " 1>> $STDOUT 2>> $STDERR
-$EXE -s $SEED -i $INSTANCE  ${CONFIG_PARAMS} 1>> $STDOUT 2>> $STDERR
+echo "Cmdline: $EXE -s $SEED -i $INSTANCE --gens 4000 ${CONFIG_PARAMS} " 1>> $STDOUT 2>> $STDERR
+$EXE -s $SEED -i $INSTANCE --gens 4000 ${CONFIG_PARAMS} 1>> $STDOUT 2>> $STDERR
 
 # Check if there is any data in the stdout.
 # The inexistence of this file may indicate an error in the execution

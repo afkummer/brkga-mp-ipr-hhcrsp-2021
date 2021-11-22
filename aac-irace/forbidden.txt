@@ -1,0 +1,11 @@
+elite.percentage + mutant.percentage > 0.9
+elite.percentage * population.size < 1 
+mutant.percentage * population.size < 1
+parents.elite >= parents.total
+parents.elite >= population.size * elite.percentage
+pr.pairs.num > population.size * elite.percentage * num.populations
+#pr.frequency >= num.generations
+#reset.frequency >= num.generations
+#exchange.elite.frequency >= num.generations
+exchange.elite.immigrants >= population.size * elite.percentage
+exchange.elite.immigrants >= population.size / num.populations
