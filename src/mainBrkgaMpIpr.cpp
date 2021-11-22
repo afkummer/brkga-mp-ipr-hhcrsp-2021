@@ -41,173 +41,41 @@
 
 #include <boost/program_options.hpp>
 
-   using namespace std;
+using namespace std;
 
 enum class DistanceFunc {
    HAMMING,
    KENDALL
 };
 
-boost::program_options::variables_map parseCommandline(int argc, char **argv) {
-   namespace po = boost::program_options;
-   po::options_description desc("Accepted command options are");
-   desc.add_options()
-      ("help,h", "shows this text")
+/// Parses the command line arguments using boost::program_options library.
+boost::program_options::variables_map parseCommandline(int argc, char **argv);
 
-      ("instance,i", po::value<string>(), "path to the instance file")
+/// Converts the parameters to the format that BRKGA library uses.
+BRKGA::BrkgaParams extractFrom(boost::program_options::variables_map &vm);
 
-      ("seed,s", po::value<int>()->default_value(1), "seed for the PRNG")
-
-      ("printall", "log the search progress in each generation, otherwise from "
-         "50 to 50 generations, or when a improved solution is found")
-
-      ("popsize,p", po::value<int>()->default_value(300), "number of individuals "
-       "in each population")
-
-      ("gens,g", po::value<int>()->default_value(600), 
-       "max. generations for the BRKGA phase")
-
-      ("pe", po::value<double>()->default_value(0.15), "percentage of elite population")
-
-      ("pm", po::value<double>()->default_value(0.15), "percentagem of mutant population")
-
-      ("mp", po::value<int>()->default_value(2), "number of parents involved in the mating")
-
-      ("ep", po::value<int>()->default_value(1), "number of elite parents involved in the mating")
-
-      ("bp", po::value<string>()->default_value("loginverse"), "set the bias"
-       " function to be used while selecting parents for mating. Accepted "
-       "values: constant, cubic, exponential, linear, loginverse, quadratic")
-
-      ("npop", po::value<int>()->default_value(1), "number of independent populations to evolve")
-
-      ("npairs", po::value<int>()->default_value(100), "number of pairs of chromosomes to test during PR")
-
-      ("mindist", po::value<double>()->default_value(0.15), "minimal distance between chromosomes to allow "
-       "performing PR")
-
-      ("psel", po::value<string>()->default_value("best"), "specifies which individuals used durint the PR. "
-       "Valid options: best, random")
-
-      ("alpha", po::value<double>()->default_value(1.0), "defines the block size during PR")
-
-      ("hdist", po::value<double>()->default_value(0.6), "defines the minimal hamming distance "
-         "between two chromosomes to allow running the implicit path relinking")
-
-      ("pperc", po::value<double>()->default_value(1.0), "defines the percentage of PR path to explore")
-
-      ("ptype", po::value<string>()->default_value("permutation"), "type of PR. Valid values: direct, permutation")
-
-      ("dfunc", po::value<string>()->default_value(""), "type of distance function to be used. Accepted values are hamming and kendall. If the parameter is suppressed, it is set automatically according to value of ptype: permutation => kendall, direct => hamming")
-
-      ("pperiod", po::value<int>()->default_value(50), "number of generations between PR attempts")
-
-      ("reset", po::value<long>()->default_value(1e6), "number of non-improving generations prior resetting the populations")
-
-      ("xelite", po::value<int>()->default_value(100), "number of generations between exchanging elite from populations")
-
-      ("immigrants", po::value<int>()->default_value(8), "number of immigrants while exchanging elites")
-   ;
-
-   po::variables_map vm;
-   po::store(po::parse_command_line(argc, argv, desc), vm);
-   po::notify(vm);    
-
-   if (vm.count("help") || !vm.count("instance")) {
-      cout << desc << "\n";
-      exit(EXIT_FAILURE);
-   }
-
-   return vm;
-}
-
-BRKGA::BrkgaParams extractFrom(boost::program_options::variables_map &vm) {
-   auto params {BRKGA::BrkgaParams()};
-
-   params.population_size = vm["popsize"].as<int>();
-   params.elite_percentage = vm["pe"].as<double>();
-   params.mutants_percentage = vm["pm"].as<double>();
-   params.total_parents = vm["mp"].as<int>();
-   params.num_elite_parents = vm["ep"].as<int>();
-
-   {
-      auto bp = vm["bp"].as<string>();
-      if (bp == "constant") {
-         params.bias_type = BRKGA::BiasFunctionType::CONSTANT;
-      } else if (bp == "cubic") {
-         params.bias_type = BRKGA::BiasFunctionType::CUBIC;
-      } else if (bp == "exponential") {
-         params.bias_type = BRKGA::BiasFunctionType::EXPONENTIAL;
-      } else if (bp == "linear") {
-         params.bias_type = BRKGA::BiasFunctionType::LINEAR;
-      } else if (bp == "loginverse") {
-         params.bias_type = BRKGA::BiasFunctionType::LOGINVERSE;
-      } else if (bp == "quadratic") {
-         params.bias_type = BRKGA::BiasFunctionType::QUADRATIC;
-      } else {
-         cout << "Invalid bias for parent selection: " << bp << endl;
-         exit(EXIT_FAILURE);
-      }
-   }
-
-   params.num_independent_populations = vm["npop"].as<int>();
-   params.pr_number_pairs = vm["npairs"].as<int>();
-   params.pr_minimum_distance = vm["mindist"].as<double>();
-
-   {
-      const auto ty = vm["ptype"].as<string>();
-      if (ty == "direct") {
-         params.pr_type = BRKGA::PathRelinking::Type::DIRECT;
-      } else if (ty == "permutation") {
-         params.pr_type = BRKGA::PathRelinking::Type::PERMUTATION;
-      } else {
-         cout << "Unknown path relinking type: " << ty << endl;
-         exit(EXIT_FAILURE);
-      }
-   }
-   
-   {
-      auto sel = vm["psel"].as<string>();
-      if (sel == "best") {
-         params.pr_selection = BRKGA::PathRelinking::Selection::BESTSOLUTION;
-      } else if (sel == "random") {
-         params.pr_selection = BRKGA::PathRelinking::Selection::RANDOMELITE;
-      } else {
-         cout << "Invalid individual selection for PR: " << sel << endl;
-         exit(EXIT_FAILURE);
-      }
-   }
-
-   params.alpha_block_size = vm["alpha"].as<double>();
-   params.pr_percentage = vm["pperc"].as<double>();
-
-   return params;
-}
-   
-void printSupplyDemandIndicators(const Instance &inst) {
-   cout << "Summary of supply x demand for each service type:\n";
-   for (int s = 0; s < inst.numSkills(); ++s) {
-      int supply = 0, demand = 0;
-      for (int i = 1; i < inst.numNodes()-1; ++i) {
-         demand += inst.nodeReqSkill(i, s) ? 1 : 0;
-      }
-      for (int v = 0; v < inst.numVehicles(); ++v) {
-         supply += inst.vehicleHasSkill(v, s) ? 1 : 0;
-      }
-      cout << "Skill " << s << " has supply = " << supply << " and demand "
-         "= " << demand << ", ratio = " <<  double(supply)/demand<< "\n";
-   }
-}
+/// Prints some metrics regarding the number of qualified caregivers, 
+/// and the number of service requests, per service type.
+void printSupplyDemandIndicators(const Instance &inst);
 
 int main(int argc, char* argv[]) {
-
+   // Parses command line arguments.
    auto args = parseCommandline(argc, argv);
    auto brkga_params = extractFrom(args);
 
+   // Print some information about the run.
    cout << "--- BRKGA-MP-IPR for HHCRSP ---\n";
    cout << "Instance: " << args["instance"].as<string>() << endl;
    cout << "Seed: " << args["seed"].as<int>() << endl;
+   cout << "\n";
 
+   // Reads the problem instance.
+   const string instFile = args["instance"].as<string>();
+   cout << "Parsing instance file...\n";
+   auto instance = Instance(instFile.c_str());
+   cout << "Problem contains " << (instance.numNodes() - 2) << 
+      " patients and " << instance.numVehicles() << " caregivers.\n";
+   printSupplyDemandIndicators(instance);
    cout << endl;
 
    double overallBest = 1e75;
@@ -216,16 +84,11 @@ int main(int argc, char* argv[]) {
       const unsigned seed = args["seed"].as<int>();
       const string config_file = "config.conf";
       const unsigned num_generations = args["gens"].as<int>();
-      const string instance_file = args["instance"].as<string>();
+      
       const int immigrants = args["immigrants"].as<int>();
       const double hdist = args["hdist"].as<double>();
 
-      cout << "Reading data... " << flush;
-      auto instance = Instance(instance_file.c_str());
-      cout << "Problem contains " << (instance.numNodes()-2) << " patients "
-         " and " << instance.numVehicles() << " caregivers.\n\n";
-      printSupplyDemandIndicators(instance);
-      cout << endl;
+      
 
       cout << "Reading parameters..." << endl;
       DistanceFunc dfunc =
@@ -506,4 +369,155 @@ int main(int argc, char* argv[]) {
    cout << "\n\n" << overallBest << endl;
 
    return 0;
+}
+
+boost::program_options::variables_map parseCommandline(int argc, char **argv) {
+   namespace po = boost::program_options;
+   po::options_description desc("Accepted command options are");
+   desc.add_options()
+      ("help,h", "shows this text")
+
+      ("instance,i", po::value<string>(), "path to the instance file")
+
+      ("seed,s", po::value<int>()->default_value(1), "seed for the PRNG")
+
+      ("printall", "log the search progress in each generation, otherwise from "
+         "50 to 50 generations, or when a improved solution is found")
+
+      ("popsize,p", po::value<int>()->default_value(300), "number of individuals "
+       "in each population")
+
+      ("gens,g", po::value<int>()->default_value(600), 
+       "max. generations for the BRKGA phase")
+
+      ("pe", po::value<double>()->default_value(0.15), "percentage of elite population")
+
+      ("pm", po::value<double>()->default_value(0.15), "percentagem of mutant population")
+
+      ("mp", po::value<int>()->default_value(2), "number of parents involved in the mating")
+
+      ("ep", po::value<int>()->default_value(1), "number of elite parents involved in the mating")
+
+      ("bp", po::value<string>()->default_value("loginverse"), "set the bias"
+       " function to be used while selecting parents for mating. Accepted "
+       "values: constant, cubic, exponential, linear, loginverse, quadratic")
+
+      ("npop", po::value<int>()->default_value(1), "number of independent populations to evolve")
+
+      ("npairs", po::value<int>()->default_value(100), "number of pairs of chromosomes to test during PR")
+
+      ("mindist", po::value<double>()->default_value(0.15), "minimal distance between chromosomes to allow "
+       "performing PR")
+
+      ("psel", po::value<string>()->default_value("best"), "specifies which individuals used durint the PR. "
+       "Valid options: best, random")
+
+      ("alpha", po::value<double>()->default_value(1.0), "defines the block size during PR")
+
+      ("hdist", po::value<double>()->default_value(0.6), "defines the minimal hamming distance "
+         "between two chromosomes to allow running the implicit path relinking")
+
+      ("pperc", po::value<double>()->default_value(1.0), "defines the percentage of PR path to explore")
+
+      ("ptype", po::value<string>()->default_value("permutation"), "type of PR. Valid values: direct, permutation")
+
+      ("dfunc", po::value<string>()->default_value(""), "type of distance function to be used. Accepted values are hamming and kendall. If the parameter is suppressed, it is set automatically according to value of ptype: permutation => kendall, direct => hamming")
+
+      ("pperiod", po::value<int>()->default_value(50), "number of generations between PR attempts")
+
+      ("reset", po::value<long>()->default_value(1e6), "number of non-improving generations prior resetting the populations")
+
+      ("xelite", po::value<int>()->default_value(100), "number of generations between exchanging elite from populations")
+
+      ("immigrants", po::value<int>()->default_value(8), "number of immigrants while exchanging elites")
+   ;
+
+   po::variables_map vm;
+   po::store(po::parse_command_line(argc, argv, desc), vm);
+   po::notify(vm);    
+
+   if (vm.count("help") || !vm.count("instance")) {
+      cout << desc << "\n";
+      exit(EXIT_FAILURE);
+   }
+
+   return vm;
+}
+
+BRKGA::BrkgaParams extractFrom(boost::program_options::variables_map &vm) {
+   auto params {BRKGA::BrkgaParams()};
+
+   params.population_size = vm["popsize"].as<int>();
+   params.elite_percentage = vm["pe"].as<double>();
+   params.mutants_percentage = vm["pm"].as<double>();
+   params.total_parents = vm["mp"].as<int>();
+   params.num_elite_parents = vm["ep"].as<int>();
+
+   {
+      auto bp = vm["bp"].as<string>();
+      if (bp == "constant") {
+         params.bias_type = BRKGA::BiasFunctionType::CONSTANT;
+      } else if (bp == "cubic") {
+         params.bias_type = BRKGA::BiasFunctionType::CUBIC;
+      } else if (bp == "exponential") {
+         params.bias_type = BRKGA::BiasFunctionType::EXPONENTIAL;
+      } else if (bp == "linear") {
+         params.bias_type = BRKGA::BiasFunctionType::LINEAR;
+      } else if (bp == "loginverse") {
+         params.bias_type = BRKGA::BiasFunctionType::LOGINVERSE;
+      } else if (bp == "quadratic") {
+         params.bias_type = BRKGA::BiasFunctionType::QUADRATIC;
+      } else {
+         cout << "Invalid bias for parent selection: " << bp << endl;
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   params.num_independent_populations = vm["npop"].as<int>();
+   params.pr_number_pairs = vm["npairs"].as<int>();
+   params.pr_minimum_distance = vm["mindist"].as<double>();
+
+   {
+      const auto ty = vm["ptype"].as<string>();
+      if (ty == "direct") {
+         params.pr_type = BRKGA::PathRelinking::Type::DIRECT;
+      } else if (ty == "permutation") {
+         params.pr_type = BRKGA::PathRelinking::Type::PERMUTATION;
+      } else {
+         cout << "Unknown path relinking type: " << ty << endl;
+         exit(EXIT_FAILURE);
+      }
+   }
+   
+   {
+      auto sel = vm["psel"].as<string>();
+      if (sel == "best") {
+         params.pr_selection = BRKGA::PathRelinking::Selection::BESTSOLUTION;
+      } else if (sel == "random") {
+         params.pr_selection = BRKGA::PathRelinking::Selection::RANDOMELITE;
+      } else {
+         cout << "Invalid individual selection for PR: " << sel << endl;
+         exit(EXIT_FAILURE);
+      }
+   }
+
+   params.alpha_block_size = vm["alpha"].as<double>();
+   params.pr_percentage = vm["pperc"].as<double>();
+
+   return params;
+}
+   
+void printSupplyDemandIndicators(const Instance &inst) {
+   cout << "Summary of supply/demand per service type:\n";
+   for (int s = 0; s < inst.numSkills(); ++s) {
+      int supply = 0, demand = 0;
+      for (int i = 1; i < inst.numNodes()-1; ++i) {
+         demand += inst.nodeReqSkill(i, s) ? 1 : 0;
+      }
+      for (int v = 0; v < inst.numVehicles(); ++v) {
+         supply += inst.vehicleHasSkill(v, s) ? 1 : 0;
+      }
+      cout << "   Service type: " << s << " Qualified carers: " << setw(3) << supply << 
+         " Service requests: " << setw(4) << demand << " Ratio = " <<  double(supply)/demand<< "\n";
+   }
 }
