@@ -43,11 +43,6 @@
 
 using namespace std;
 
-enum class DistanceFunc {
-   HAMMING,
-   KENDALL
-};
-
 /// Parses the command line arguments using boost::program_options library.
 boost::program_options::variables_map parseCommandline(int argc, char **argv);
 
@@ -58,15 +53,19 @@ BRKGA::BrkgaParams extractFrom(boost::program_options::variables_map &vm);
 /// and the number of service requests, per service type.
 void printSupplyDemandIndicators(const Instance &inst);
 
+/// Computes the average and standard deviation of elite set of the GA.
+tuple<double, double> computeEliteDiversity(const BRKGA::BRKGA_MP_IPR<SortingDecoder> &solver);
+
 int main(int argc, char* argv[]) {
    // Parses command line arguments.
    auto args = parseCommandline(argc, argv);
    auto brkga_params = extractFrom(args);
 
    // Print some information about the run.
+   const unsigned seed = args["seed"].as<int>();
    cout << "--- BRKGA-MP-IPR for HHCRSP ---\n";
    cout << "Instance: " << args["instance"].as<string>() << endl;
-   cout << "Seed: " << args["seed"].as<int>() << endl;
+   cout << "Seed: " << seed << endl;
    cout << "\n";
 
    // Reads the problem instance.
@@ -80,38 +79,33 @@ int main(int argc, char* argv[]) {
 
    double overallBest = 1e75;
    try {
-      
-      const unsigned seed = args["seed"].as<int>();
-      const string config_file = "config.conf";
+      // Caches a copy some of the control parameters.
       const unsigned num_generations = args["gens"].as<int>();
-      
       const int immigrants = args["immigrants"].as<int>();
-      const double hdist = args["hdist"].as<double>();
+      const auto iprType = args["ptype"].as<string>();
 
-      
-
-      cout << "Reading parameters..." << endl;
-      DistanceFunc dfunc =
-         brkga_params.pr_type == BRKGA::PathRelinking::Type::DIRECT
-            ? DistanceFunc::HAMMING
-            : DistanceFunc::KENDALL;
-
+      // Logic for selecting the distance function according to 
+      // implicit PR selection.
+      shared_ptr <BRKGA::DistanceFunctionBase> distFuncPtr;
       {
          const auto &str = args["dfunc"].as<string>();
          if (str.empty()) {
             cout << "Inferred distance function by PR type: ";
-            if (dfunc == DistanceFunc::HAMMING)
+            if (str == "direct") {
                cout << "hamming";
-            else
+               distFuncPtr.reset(new BRKGA::HammingDistance(args["hdist"].as<int>()));
+            } else {
                cout << "kendall-tau";
-            cout << endl;
+               distFuncPtr.reset(new BRKGA::KendallTauDistance());
+            }
+            cout << "\n";
          } else {
             if (str == "hamming") {
-               dfunc = DistanceFunc::HAMMING;
                cout << "Using hamming distance forcibly.\n";
+               distFuncPtr.reset(new BRKGA::HammingDistance(args["hdist"].as<int>()));
             } else if (str == "kendall") {
-               dfunc = DistanceFunc::KENDALL;
                cout << "Using kendall-tau distance forcibly.\n";
+               distFuncPtr.reset(new BRKGA::KendallTauDistance());
             } else {
                cout << "Unknown distance function: " << str << "\n";
                abort();
@@ -119,52 +113,32 @@ int main(int argc, char* argv[]) {
          }
       }
 
-      cout << "Building BRKGA data and initializing..." << endl;
+      cout << "Initializing genetic algorithm...\n";
       SortingDecoder decoder(instance);
       BRKGA::BRKGA_MP_IPR<SortingDecoder> algorithm(
-            decoder, BRKGA::Sense::MINIMIZE, seed,
-            decoder.chromosomeLength(), brkga_params, omp_get_max_threads());
-
+         decoder, BRKGA::Sense::MINIMIZE, seed,
+         decoder.chromosomeLength(), brkga_params, omp_get_max_threads()
+      );
       algorithm.initialize();
 
-      cout << "Evolving " << num_generations << " generations..." << endl;
+      // Some other control parameters used within the algorithm.
       const auto prPeriod = args["pperiod"].as<int>();
       const auto resetPeriod = args["reset"].as<long>();
       const auto exchangePeriod = args["xelite"].as<int>();
       const auto printPeriod = args.count("printall") ? 1 : 50;
 
-      unsigned generation = 0;
+      // Some indicators collected during the run.
+      int iprHomogeneous = 0, iprNoImprovement = 0, 
+         iprEliteImprovement = 0, iprBestImprovement = 0;
+      int linesPrinted = 0;
+      int opIpr = 0, opXe = 0, opRst = 0;
+
       Timer tm;
+      unsigned generation = 0;
       int noImprove = 0;
 
       double localBest = numeric_limits<double>::infinity();
-      double dist = localBest, tard = localBest, tmax = localBest;
-
-      int linesPrinted = 0;
-      int prOp = 0, xeOp = 0, rstOp = 0;
-
-      double eliteMean, eliteStdev;
-      auto updateEliteDiversity = [&] () {
-         int cnt = 0;
-         eliteMean = 0.0;
-         const auto npop = brkga_params.num_independent_populations;
-         const auto pops = int(brkga_params.population_size * brkga_params.elite_percentage);
-         for (unsigned k = 0; k < npop; ++k) {
-            for (int i = 0; i < pops; ++i) {
-               eliteMean += algorithm.getFitness(k, i);
-               ++cnt;
-            }
-         }
-         eliteMean /= cnt;
-         eliteStdev = 0.0;
-         for (unsigned k = 0; k < npop; ++k) {
-            for (int i = 0; i < pops; ++i) {
-               eliteStdev += pow(algorithm.getFitness(k, i) - eliteMean, 2);
-            }
-         }
-         eliteStdev /= cnt;
-         eliteStdev = sqrt(eliteStdev);
-      };
+      double dist = localBest, tard = localBest, tmax = localBest;      
 
       // Prints the header of algorithm output.
       auto printHeader = [] () {
@@ -182,7 +156,7 @@ int main(int argc, char* argv[]) {
             
             setw(7) << "Time" << " " <<
             setw(3) << "Op" << 
-         endl;
+         "\n";
 
          cout << 
             setw(34) << "" << " " <<
@@ -190,7 +164,7 @@ int main(int argc, char* argv[]) {
             setw(8) << "Dist" << " " <<
             setw(7) << "Tard" << " " <<
             setw(7) << "TMax" << " " <<
-         endl;
+         "\n";
 
       };
 
@@ -205,7 +179,7 @@ int main(int argc, char* argv[]) {
             ++linesPrinted;
          }
 
-         updateEliteDiversity();
+         auto [eliteMean, eliteStdev] = computeEliteDiversity(algorithm);
          tm.finish();
          cout << 
             fixed << 
@@ -224,11 +198,13 @@ int main(int argc, char* argv[]) {
 
             setw(7) << setprecision(1) << tm.elapsed() << " " <<
             setw(3) << evt << 
-         endl;
+         "\n";
          hdr = ' ';
          evt = "";
       };
       
+      cout << "Stopping criteria: " << instance.numNodes()/2 << " staled generations, maximum of "<< num_generations << " generations.\n";
+
       printHeader();
       tm.start();
       do {
@@ -256,37 +232,35 @@ int main(int argc, char* argv[]) {
          if (prPeriod > 0 && generation > 0 && generation % prPeriod == 0) {
             using BRKGA::PathRelinking::PathRelinkingResult;
             evt += 'P';
-            prOp++;
-            PathRelinkingResult result;
-            if (dfunc == DistanceFunc::HAMMING) {
-               result = algorithm.pathRelink(make_shared<BRKGA::HammingDistance>(hdist));
-            } else {
-               result = algorithm.pathRelink(make_shared<BRKGA::KendallTauDistance>());
-            }
+            opIpr++;
+            PathRelinkingResult result = algorithm.pathRelink(distFuncPtr);
             cout << "Path relinking result: ";
             switch(result) {
                case PathRelinkingResult::TOO_HOMOGENEOUS:
                   cout << "too homogeneous.";
+                  iprHomogeneous++;
                   break;
                case PathRelinkingResult::NO_IMPROVEMENT:
                   cout << "no improvement.";
+                  iprNoImprovement++;
                   break;
                case PathRelinkingResult::ELITE_IMPROVEMENT:
                   cout << "elite improvement.";
+                  iprEliteImprovement++;
                   break;
                case PathRelinkingResult::BEST_IMPROVEMENT:
                   cout << "best improvement.";
+                  iprBestImprovement++;
                   break;
             }
-            cout << endl;
+            cout << "\n";
          }
 
          if (exchangePeriod > 0 && generation > 0 && brkga_params.num_independent_populations > 1 && generation % exchangePeriod == 0) {
             evt += 'X';
-            xeOp++;
+            opXe++;
             algorithm.exchangeElite(immigrants);
          }
-
          
          if (localBest - algorithm.getBestFitness() < 0.05) {
             ++noImprove;
@@ -297,7 +271,7 @@ int main(int argc, char* argv[]) {
 
          if (noImprove >= resetPeriod) {
             evt += 'R';
-            rstOp++;
+            opRst++;
             localBest = numeric_limits<double>::infinity();
             algorithm.reset();
             noImprove = 0;
@@ -308,11 +282,18 @@ int main(int argc, char* argv[]) {
          }
 
          ++generation;
+
+         // New stopping criteria: by iterations without improvement.
+         if (noImprove >= instance.numNodes()/2) {
+            cout << "Early stopping a stale search.\n";
+            break;
+         }
       } while (generation < num_generations);
 
       printProgress(); 
-      cout << "Evolutionary process finished.\n";
+      cout << "\nEvolutionary process finished.\n";
 
+      // Post-optimization processing of the fittest individual.
       {
          char buf[256] = "solution-XXXXXX.txt";
          int fid = mkstemps(buf, 4);
@@ -325,15 +306,7 @@ int main(int argc, char* argv[]) {
          sol.writeFile(buf, seed);
          cout << "Solution written to '" << buf << "'.\n";
 
-         sort(rbegin(sol.insertOrder), rend(sol.insertOrder), [] (const auto &i, const auto &j) {
-            return i.incTard < j.incTard;
-         });
-
-         cout << "\nSorted sequence of worst to best tardiness value:\n";
-         for (const auto &t: sol.insertOrder)
-            cout << t << endl;
-
-         cout << "\nUnused vehicle list: ";
+         cout << "Unused vehicle list: ";
          int idle = 0;
          for (int v = 0; v < instance.numVehicles(); ++v) {
             if (sol.routes[v].size() <= 2) {
@@ -341,15 +314,15 @@ int main(int argc, char* argv[]) {
                cout << v << ' ';
             }
          }
-         cout << "(total = " << idle << " out of " << instance.numVehicles() << ")" << endl;
+         cout << "(total = " << idle << " out of " << instance.numVehicles() << ")" << "\n";
       }
 
 
       cout << "\n---\nSearch finished.\n";
       cout << "Total of " << generation << " generations in " << tm.elapsed() << " seconds.\n";
-      cout << "Exchange elite runs: " << xeOp << "\n";
-      cout << "Implicit path relinking runs: " << prOp << "\n";
-      cout << "Reset attempts: " << rstOp << "\n";
+      cout << "Exchange elite runs: " << opXe << "\n";
+      cout << "Implicit path relinking runs: " << opIpr << "\n";
+      cout << "Reset attempts: " << opRst << "\n";
       cout << "\n";
 
       cout << "Best solution found:\n";
@@ -414,8 +387,8 @@ boost::program_options::variables_map parseCommandline(int argc, char **argv) {
 
       ("alpha", po::value<double>()->default_value(1.0), "defines the block size during PR")
 
-      ("hdist", po::value<double>()->default_value(0.6), "defines the minimal hamming distance "
-         "between two chromosomes to allow running the implicit path relinking")
+      ("hdist", po::value<double>()->default_value(0.5), "defines the thresold value, used in the hamming distance "
+         "to interpret a random key as false or true")
 
       ("pperc", po::value<double>()->default_value(1.0), "defines the percentage of PR path to explore")
 
@@ -468,7 +441,7 @@ BRKGA::BrkgaParams extractFrom(boost::program_options::variables_map &vm) {
       } else if (bp == "quadratic") {
          params.bias_type = BRKGA::BiasFunctionType::QUADRATIC;
       } else {
-         cout << "Invalid bias for parent selection: " << bp << endl;
+         cout << "Invalid bias for parent selection: " << bp << "\n";
          exit(EXIT_FAILURE);
       }
    }
@@ -484,7 +457,7 @@ BRKGA::BrkgaParams extractFrom(boost::program_options::variables_map &vm) {
       } else if (ty == "permutation") {
          params.pr_type = BRKGA::PathRelinking::Type::PERMUTATION;
       } else {
-         cout << "Unknown path relinking type: " << ty << endl;
+         cout << "Unknown path relinking type: " << ty << "\n";
          exit(EXIT_FAILURE);
       }
    }
@@ -496,7 +469,7 @@ BRKGA::BrkgaParams extractFrom(boost::program_options::variables_map &vm) {
       } else if (sel == "random") {
          params.pr_selection = BRKGA::PathRelinking::Selection::RANDOMELITE;
       } else {
-         cout << "Invalid individual selection for PR: " << sel << endl;
+         cout << "Invalid individual selection for PR: " << sel << "\n";
          exit(EXIT_FAILURE);
       }
    }
@@ -520,4 +493,27 @@ void printSupplyDemandIndicators(const Instance &inst) {
       cout << "   Service type: " << s << " Qualified carers: " << setw(3) << supply << 
          " Service requests: " << setw(4) << demand << " Ratio = " <<  double(supply)/demand<< "\n";
    }
+}
+
+tuple<double, double> computeEliteDiversity(const BRKGA::BRKGA_MP_IPR<SortingDecoder> &solver) {
+   int cnt = 0;
+   double mean = 0.0;
+   const auto npop = solver.getBrkgaParams().num_independent_populations;
+   const auto numElites = solver.getBrkgaParams().population_size * solver.getBrkgaParams().elite_percentage;
+   for (unsigned k = 0; k < npop; ++k) {
+      for (int i = 0; i < numElites; ++i) {
+         mean += solver.getFitness(k, i);
+         ++cnt;
+      }
+   }
+   mean /= cnt;
+   double stdev = 0.0;
+   for (unsigned k = 0; k < npop; ++k) {
+      for (int i = 0; i < numElites; ++i) {
+         stdev += pow(solver.getFitness(k, i) - mean, 2.0);
+      }
+   }
+   stdev /= cnt;
+   stdev = sqrt(stdev);
+   return make_tuple(mean, stdev);
 }
