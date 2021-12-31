@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 
          // New stopping criteria: by iterations without improvement.
          if (noImprove >= instance.numNodes()/2) {
-            cout << "Early stopping a stale search.\n";
+            cout << "Stopping a stale search.\n";
             break;
          }
       } while (generation < num_generations);
@@ -360,7 +360,7 @@ boost::program_options::variables_map parseCommandline(int argc, char **argv) {
       ("popsize,p", po::value<int>()->default_value(300), "number of individuals "
        "in each population")
 
-      ("gens,g", po::value<int>()->default_value(600), 
+      ("gens,g", po::value<int>()->default_value(99999), 
        "max. generations for the BRKGA phase")
 
       ("pe", po::value<double>()->default_value(0.15), "percentage of elite population")
