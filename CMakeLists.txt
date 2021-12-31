@@ -14,6 +14,13 @@ add_definitions(
    -pthread
    -fno-omit-frame-pointer
    -flto
+
+   # The updated version of brkga_mp_ipr_cpp supports several strategies for
+   # enabling parallel mating of individuals. Here we use the version that
+   # allows most of benefits of such a parallel algorithm, and also enables
+   # reproducing the experiments without depending upon a certain number of 
+   # threads. For more details, please check the documentation of the library.
+   -DMATING_SEED_ONLY
 )
 
 # Set some include directories to the compiler look for header files of project dependencies.

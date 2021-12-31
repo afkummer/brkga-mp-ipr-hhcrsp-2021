@@ -1,3 +1,6 @@
 [submodule "gecco2020-brkga"]
 	path = gecco2020-brkga
 	url = https://github.com/afkummer/gecco2020-brkga.git
+[submodule "brkga_mp_ipr_cpp"]
+	path = brkga_mp_ipr_cpp
+	url = https://github.com/ceandrade/brkga_mp_ipr_cpp.git
